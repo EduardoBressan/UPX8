@@ -8,6 +8,9 @@ export function useColorScheme() {
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
+    // Marca que a hidratacao no cliente ja ocorreu, para so entao usar o
+    // color scheme real (evita divergencia entre render estatico e cliente).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHydrated(true);
   }, []);
 

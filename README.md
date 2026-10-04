@@ -1,56 +1,152 @@
-# Welcome to your Expo app 👋
+# ⚡ RA Lab — Realidade Aumentada para Laboratório de Eletrônica
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em laboratórios de eletrônica. O aluno aponta a câmera do celular para um equipamento (por exemplo, um multímetro ou uma protoboard) e o app:
 
-## Get started
+- **reconhece o equipamento** pela câmera;
+- mostra um **modelo 3D** sobre a peça real;
+- aponta, com **pinos numerados e etiquetas 3D**, o que cada parte faz;
+- explica cada parte (o que é, como usar, dicas e alertas de segurança);
+- oferece **guias passo a passo** ("Medir tensão DC", "Montar um LED com resistor"...), acendendo na própria peça a parte usada em cada passo.
 
-1. Install dependencies
+> Projeto acadêmico. O conteúdo é educacional: em procedimentos de risco, siga sempre a orientação do professor.
 
-   ```bash
-   npm install
-   ```
+## Como funciona
 
-2. Start the app
+O app segue o padrão **WL01 (Recognition AR)** com [ViroReact](https://viro-community.readme.io/):
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+câmera → ARCore reconhece a imagem de referência → âncora 3D → modelo + pinos + etiquetas → toque → explicação / guia
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Cada equipamento tem uma **imagem de referência** cadastrada. Quando a câmera encontra essa imagem, o conteúdo 3D fica "preso" a ela e acompanha o equipamento quando o celular se move.
 
-### Other setup steps
+**O que já está cadastrado:**
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Equipamento | Partes explicadas | Guias de uso |
+|---|---|---|
+| Multímetro digital | Display, seletor de função, bornes 10A, COM e VΩmA | Tensão DC, resistência, corrente DC, continuidade |
+| Protoboard | Barramentos + e −, colunas conectadas, canal central, coordenadas | Montar LED com resistor, encaixar um CI |
 
-## Learn more
+## Tecnologias
 
-To learn more about developing your project with Expo, look at the following resources:
+- [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) + Expo Router + React Native 0.86 + TypeScript
+- [ViroReact](https://github.com/ReactVision/viro) 2.57 (ARCore no Android) para a realidade aumentada
+- EAS Build para gerar o APK de desenvolvimento
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Pré-requisitos
 
-## Join the community
+- [Node.js](https://nodejs.org/) 20 ou 22 (LTS)
+- Celular **Android compatível com ARCore** ([lista de aparelhos](https://developers.google.com/ar/devices)) com o app **Google Play Services for AR** instalado/atualizado
+- Conta grátis no [Expo](https://expo.dev/signup) (para gerar o APK na nuvem)
 
-Join our community of developers creating universal apps.
+> ⚠️ **Não funciona no Expo Go.** O ViroReact usa código nativo, então é preciso instalar um *development build* (o APK do próprio app). O passo a passo está abaixo.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Como rodar
+
+### 1. Instalar as dependências
+
+```bash
+npm install
+```
+
+### 2. Gerar e instalar o APK (só na primeira vez)
+
+```bash
+npm install --global eas-cli
+eas login
+eas build --profile development --platform android
+```
+
+O build roda na nuvem e leva de 10 a 25 minutos. No final, o terminal mostra um **link e um QR code**:
+
+1. abra o link no celular e toque em **Install** para baixar o `.apk`;
+2. permita **instalar apps desta fonte** quando o Android pedir;
+3. se o Play Protect avisar, toque em **Mais detalhes → Instalar mesmo assim**.
+
+Só é preciso gerar um APK novo quando mudarem dependências nativas ou o `app.json`.
+
+### 3. Iniciar o servidor e conectar o celular
+
+```bash
+npx expo start
+```
+
+Com o **celular e o computador na mesma rede Wi-Fi**, abra o app **TesteUPX** no celular (não o Expo Go) e:
+
+- toque no servidor que aparece na lista; **ou**
+- digite `http://SEU_IP:8081` e toque em **Connect** (descubra o IP com `ipconfig`, em "Endereço IPv4" da rede Wi-Fi).
+
+Se não conectar, libere o Node.js no firewall do Windows ou use `npx expo start --tunnel`.
+
+Mudanças no código aparecem na hora. Se precisar, aperte `r` no terminal para recarregar.
+
+## Como testar sem o equipamento
+
+O projeto traz imagens e modelos de **demonstração**:
+
+1. no computador, abra `assets/markers/multimetro-demo.png` e ajuste o zoom até a imagem ficar com **cerca de 12 cm de largura** na tela (ou imprima nesse tamanho);
+2. no app, toque em **Abrir câmera de RA** e permita a câmera;
+3. aponte o celular para a imagem a uns 30 cm e mova devagar;
+4. o multímetro 3D aparece sobre a imagem: toque nos números e experimente os **Guias de uso**.
+
+Para a protoboard, use `assets/markers/protoboard-demo.png` com **cerca de 16,5 cm** de largura.
+
+**Se não reconhecer:** diminua o brilho do monitor (reflexo atrapalha), segure o celular de frente para a tela e mova devagar. Imagens impressas costumam funcionar melhor.
+
+## Estrutura do projeto
+
+```
+src/
+├── app/                      Telas (Expo Router)
+│   ├── index.tsx             Tela inicial
+│   └── ar.tsx                Tela da câmera de RA
+└── features/lab-ar/          Toda a realidade aumentada
+    ├── content/              ← CONTEÚDO DIDÁTICO (partes, guias, alertas)
+    │   ├── multimetro.ts
+    │   ├── protoboard.ts
+    │   └── index.ts          Lista de tudo que o app reconhece
+    ├── scene/                Cena 3D do ViroReact (alvos, pinos, etiquetas)
+    ├── ui/                   Interface 2D por cima da câmera
+    ├── arStore.ts            Estado compartilhado entre a cena 3D e a interface
+    └── geometry.ts           Converte posições da imagem em posições 3D
+
+assets/
+├── markers/                  Imagens de referência (o que a câmera reconhece)
+└── models/                   Modelos 3D (.glb)
+
+scripts/
+├── gerar-marcadores-demo.py  Gera as imagens de demonstração
+└── gerar-modelos-demo.py     Gera os modelos 3D de demonstração
+
+docs/RA-RECONHECIMENTO.md     Guia detalhado de personalização
+```
+
+## Personalizando
+
+Tudo está explicado em **[docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md)**. Resumo:
+
+- **Usar o equipamento real do laboratório:** fotografe o painel, salve em `assets/markers/`, meça a largura real e recalcule as posições das partes no arquivo de conteúdo.
+- **Trocar o modelo 3D:** coloque o `.glb` em `assets/models/` e aponte para ele em `content/multimetro.ts`. Bons lugares para encontrar modelos: [Sketchfab](https://sketchfab.com) (filtro "downloadable", formato glTF/GLB) e [Poly Pizza](https://poly.pizza). Confira sempre a licença.
+- **Adicionar um equipamento novo** (ex.: osciloscópio): copie `content/multimetro.ts`, preencha e inclua em `content/index.ts`. Não é preciso mexer na cena 3D.
+- **Regerar as imagens/modelos de demonstração** (requer Python com Pillow):
+
+  ```bash
+  python scripts/gerar-marcadores-demo.py
+  python scripts/gerar-modelos-demo.py
+  ```
+
+## Versão anterior (identificação por IA)
+
+A primeira versão identificava componentes numa foto usando a IA Google Gemini (backend em `server/`, tela `src/app/scanner/`). Esse código continua no repositório para referência, mas não aparece mais no app. A documentação dela está em [DOCUMENTACAO.md](DOCUMENTACAO.md).
+
+## Limitações conhecidas
+
+- Só reconhece o que estiver cadastrado em `src/features/lab-ar/content/`.
+- Protoboards reais são difíceis de reconhecer (grade repetitiva). Use um marcador impresso ao lado delas.
+- A posição dos pinos depende da largura física (`larguraFisicaMetros`) estar correta.
+- Configurado e testado apenas para Android.
+
+## Créditos
+
+- Estrutura de realidade aumentada baseada nos templates **WL01 Recognition AR** e **WL02 Spatial AR** fornecidos pelo professor.
+- Modelos e imagens de demonstração gerados pelos scripts em `scripts/`.

@@ -1,61 +1,65 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { Link } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { EQUIPAMENTOS_AR } from '@/features/lab-ar/content';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
+  const theme = useTheme();
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+        <ScrollView contentContainerStyle={styles.conteudo}>
+          <View style={styles.cabecalho}>
+            <View style={[styles.marca, { borderColor: theme.border }]}>
+              <ThemedText type="smallBold">⚡ RA Lab</ThemedText>
+            </View>
+            <ThemedText type="subtitle" style={styles.titulo}>
+              Aponte a câmera para o equipamento
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.centro}>
+              O app reconhece a peça, aponta em 3D o que cada parte faz e guia você passo a passo no uso correto.
+            </ThemedText>
+          </View>
+
+          <Link href="/ar" asChild>
+            <Pressable style={({ pressed }) => [styles.botaoPrincipal, { backgroundColor: theme.primary }, pressed && styles.pressionado]}>
+              <ThemedText type="smallBold" themeColor="primaryText" style={styles.textoBotao}>
+                Abrir câmera de RA
+              </ThemedText>
+            </Pressable>
+          </Link>
+
+          <ThemedText type="smallBold" themeColor="textSecondary">
+            O QUE O APP RECONHECE
           </ThemedText>
-        </ThemedView>
+          {EQUIPAMENTOS_AR.map((equipamento) => (
+            <ThemedView key={equipamento.id} type="backgroundElement" style={[styles.card, { borderColor: theme.border }]}>
+              <Image source={equipamento.alvo.imagem} style={styles.miniatura} contentFit="contain" />
+              <View style={styles.cardTextos}>
+                <ThemedText type="smallBold" style={styles.cardTitulo}>
+                  {equipamento.nome}
+                </ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {equipamento.descricao}
+                </ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {equipamento.hotspots.length} partes · {equipamento.procedimentos.length} guias de uso
+                </ThemedText>
+              </View>
+            </ThemedView>
+          ))}
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
+          <ThemedText type="small" themeColor="textSecondary" style={styles.centro}>
+            App educacional. Em procedimentos de risco, confirme sempre com o professor.
+          </ThemedText>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -64,35 +68,69 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
+    alignSelf: 'center',
+    width: '100%',
     maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
+  conteudo: {
+    flexGrow: 1,
     justifyContent: 'center',
-    flex: 1,
     paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    paddingVertical: Spacing.four,
+    gap: Spacing.three,
   },
-  title: {
+  cabecalho: {
+    alignItems: 'center',
+    gap: Spacing.three,
+    marginBottom: Spacing.two,
+  },
+  marca: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+  },
+  titulo: {
+    textAlign: 'center',
+    fontSize: 28,
+    lineHeight: 34,
+  },
+  centro: {
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  botaoPrincipal: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+    marginBottom: Spacing.two,
   },
-  stepContainer: {
+  pressionado: {
+    opacity: 0.7,
+  },
+  textoBotao: {
+    fontSize: 17,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: Spacing.three,
+  },
+  miniatura: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+  },
+  cardTextos: {
+    flex: 1,
+    gap: 2,
+  },
+  cardTitulo: {
+    fontSize: 17,
   },
 });
