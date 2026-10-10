@@ -35,6 +35,16 @@ const ESTADO_INICIAL: EstadoAR = {
 let estado: EstadoAR = ESTADO_INICIAL;
 const ouvintes = new Set<() => void>();
 
+// Tolerancia antes de considerar o equipamento fora de vista: o ARCore perde a imagem por instantes
+// quando a camera treme ou inclina, e esconder o conteudo na hora faria o modelo piscar.
+const TOLERANCIA_FORA_DE_VISTA_MS = 800;
+let temporizadorForaDeVista: ReturnType<typeof setTimeout> | null = null;
+
+function cancelarForaDeVista() {
+  if (temporizadorForaDeVista) clearTimeout(temporizadorForaDeVista);
+  temporizadorForaDeVista = null;
+}
+
 function atualizar(parcial: Partial<EstadoAR>) {
   estado = { ...estado, ...parcial };
   ouvintes.forEach((ouvinte) => ouvinte());
@@ -53,12 +63,14 @@ export function useEstadoAR(): EstadoAR {
 
 export const acoesAR = {
   reiniciar() {
+    cancelarForaDeVista();
     atualizar(ESTADO_INICIAL);
   },
   definirRastreamento(rastreamento: Rastreamento) {
     if (rastreamento !== estado.rastreamento) atualizar({ rastreamento });
   },
   equipamentoReconhecido(equipamentoId: string) {
+    cancelarForaDeVista();
     if (equipamentoId === estado.equipamentoId) {
       if (!estado.equipamentoVisivel) atualizar({ equipamentoVisivel: true });
       return;
@@ -66,10 +78,15 @@ export const acoesAR = {
     atualizar({ equipamentoId, equipamentoVisivel: true, hotspotId: null, procedimento: null });
   },
   equipamentoForaDeVista(equipamentoId: string) {
-    if (equipamentoId === estado.equipamentoId && estado.equipamentoVisivel) atualizar({ equipamentoVisivel: false });
+    if (equipamentoId !== estado.equipamentoId || !estado.equipamentoVisivel || temporizadorForaDeVista) return;
+    temporizadorForaDeVista = setTimeout(() => {
+      temporizadorForaDeVista = null;
+      if (equipamentoId === estado.equipamentoId) atualizar({ equipamentoVisivel: false });
+    }, TOLERANCIA_FORA_DE_VISTA_MS);
   },
   equipamentoPerdido(equipamentoId: string) {
     if (equipamentoId !== estado.equipamentoId) return;
+    cancelarForaDeVista();
     atualizar({ equipamentoId: null, equipamentoVisivel: false, hotspotId: null, procedimento: null });
   },
   selecionarHotspot(hotspotId: string | null) {

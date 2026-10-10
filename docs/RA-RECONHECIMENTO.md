@@ -17,7 +17,7 @@ câmera → ARCore reconhece a imagem de referência → âncora → pinos/etiqu
 ```
 src/features/lab-ar/
 ├── content/            ← CONTEÚDO DIDÁTICO (é aqui que a equipe mais mexe)
-│   ├── multimetro.ts   partes, guias de uso, cuidados, imagem de referência
+│   ├── multimetro-ft266.ts  frente e parte de trás: partes, guias, cuidados, alvos, modelo 3D
 │   ├── protoboard.ts
 │   └── index.ts        catálogo: lista de tudo que o app reconhece
 ├── scene/
@@ -53,11 +53,15 @@ e abra o app instalado (ele se conecta ao Metro como o Expo Go fazia). Só é pr
 
 ## 2. Testar sem o equipamento (imagens de demonstração)
 
-`assets/markers/multimetro-demo.png` e `assets/markers/protoboard-demo.png` são desenhos com bastante detalhe, feitos para o ARCore reconhecer bem. Para testar:
+Os alvos do multímetro FT-266 (`assets/markers/ft266-frente.jpg` e `ft266-traseira.jpg`) são recortes das fotos reais, e `assets/markers/protoboard-demo.png` é um desenho de demonstração. Para testar sem o equipamento:
 
-1. abra uma delas na tela do computador (ou imprima: multímetro com **12 cm** de largura, protoboard com **16,5 cm**);
-2. no app, toque em **Abrir câmera de RA** e aponte para a imagem;
-3. os pinos numerados aparecem sobre o display, o seletor, os bornes etc.
+1. abra uma delas na tela do computador (ou imprima: multímetro com **6,5 cm** de largura, protoboard com **16,5 cm**);
+2. no app, toque em **Abrir câmera** e aponte para a imagem;
+3. os pinos numerados aparecem sobre o seletor, o display, os bornes etc.
+
+> No multímetro real, deixe o **seletor em OFF** ao apontar a câmera: a posição da chave faz parte da imagem reconhecida.
+>
+> **Cada face é um alvo separado.** Ao virar o aparelho, o app reconhece o outro lado e troca o conteúdo. Depois de reconhecido, o conteúdo fica preso ao equipamento mesmo quando a imagem sai de vista ou fica pequena na câmera (o ARCore mantém a última posição no mundo, certa enquanto o aparelho não se mexe); só o equipamento ativo aparece. `numberOfTrackedImages` em `ARView.tsx` precisa ser igual ao número de alvos, senão o ARCore não reconhece o segundo lado enquanto ainda guarda o primeiro. Para um equipamento novo que também será virado, cadastre um `EquipamentoAR` para cada face.
 
 > Se exibir na tela do PC, a largura real na tela deve ser parecida com `larguraFisicaMetros`. Se não for, os pinos aparecem um pouco deslocados (o ARCore estima a distância pelo tamanho informado).
 
@@ -66,7 +70,7 @@ e abra o app instalado (ele se conecta ao Metro como o Expo Go fazia). Só é pr
 Para cada equipamento:
 
 1. **Fotografe** o painel de frente, bem iluminado, sem reflexo, e **recorte** só a área do painel.
-2. Salve em `assets/markers/` (ex.: `multimetro-lab.png`) e troque o `require(...)` em `alvo.imagem`.
+2. Salve em `assets/markers/` e troque o `require(...)` em `alvo.imagem`. Para o FT-266 isso é automatizado por `scripts/gerar-alvo-ft266.py`, que endireita e recorta a foto e calcula os pontos (u, v) a partir do modelo 3D em escala real.
 3. **Meça com uma régua** a largura real da área recortada e coloque em `larguraFisicaMetros` (em metros: 9,5 cm = `0.095`).
 4. **Recalcule os pontos** de cada parte: abra a foto num editor de imagem, veja o pixel (x, y) do centro da parte e use
    `u = x / largura_da_imagem` e `v = y / altura_da_imagem`.
@@ -83,12 +87,15 @@ Dicas para a imagem ser bem reconhecida (recomendações do ARCore):
 
 O Metro já aceita `.glb`, `.gltf`, `.bin`, `.obj` e `.mtl` (ver `metro.config.js`).
 
-Já existem **modelos de demonstração** (`assets/models/multimetro-demo.glb` e `protoboard-demo.glb`), gerados por `python scripts/gerar-modelos-demo.py`. Eles usam a própria imagem de referência como textura na face de cima e já vêm alinhados com ela, por isso usam `posicao/rotacao [0, 0, 0]` e `escala [1, 1, 1]`. `alturaSuperficie` (espessura do modelo) e `alturaExtraNoModelo` (peças saltadas, como o seletor) fazem os pinos ficarem em cima do modelo, e não escondidos dentro dele.
+Há dois casos no projeto:
+
+- **Multímetro FT-266** (`assets/models/alicate-ft266.glb`): modelo em escala real que se **sobrepõe ao aparelho real**. `posicao` desloca o modelo para que a face reconhecida coincida com o centro da imagem, e `alturaSuperficie` fica 0. Na parte de trás, `rotacao: [0, 0, 180]` vira o modelo para a face de baixo ficar para cima. Cada parte pode ter `alturaExtra` (positiva para peças saltadas, negativa para partes abaixo do painel, como o botão lateral) e `animacaoModelo`, o nome de uma animação do .glb tocada quando a parte está em destaque (ex.: `Pressionar_DataHold`; o .glb também tem `Girar_Seletor`, que não é usada). Todos esses valores são impressos por `scripts/gerar-alvo-ft266.py`.
+- **Protoboard de demonstração** (`protoboard-demo.glb`, gerado por `scripts/gerar-modelos-demo.py`): modelo **apoiado sobre a imagem**, então `alturaSuperficie` é a espessura dele e os pinos sobem junto quando o modelo está visível.
 
 Para trocar pelo modelo real:
 
-1. Coloque o arquivo em `assets/models/` (ex.: `multimetro.glb`). Prefira **.glb** (um arquivo só, com texturas embutidas) e modelos leves (< 5 MB).
-2. Em `content/multimetro.ts`, descomente o bloco `modelo3D` e aponte para o arquivo.
+1. Coloque o arquivo em `assets/models/` (ex.: `osciloscopio.glb`). Prefira **.glb** (um arquivo só, com texturas embutidas) e modelos leves (< 5 MB).
+2. No arquivo de conteúdo do equipamento, preencha o bloco `modelo3D` apontando para o arquivo.
 3. Ajuste `escala`, `rotacao` e `posicao`. O sistema de coordenadas é o da imagem reconhecida: origem no centro, X para a direita, **Y saindo da imagem** e Z para a parte de baixo da imagem, em metros. Modelos .glb costumam vir com Y para cima, então um painel modelado de frente geralmente precisa de `rotacao: [-90, 0, 0]` para "deitar" sobre a imagem.
 4. O botão **Modelo 3D** aparece no topo da tela de RA para mostrar/ocultar o modelo.
 
@@ -96,7 +103,7 @@ Para `.obj`, use `tipo: 'OBJ'` e passe o `.mtl` e as texturas em `recursos: [req
 
 ## 5. Adicionar um equipamento novo (ex.: osciloscópio)
 
-1. Copie `content/multimetro.ts` para `content/osciloscopio.ts` e preencha: imagem, largura, partes (`hotspots`) e guias (`procedimentos`).
+1. Copie `content/multimetro-ft266.ts` para `content/osciloscopio.ts` e preencha: imagem, largura, partes (`hotspots`) e guias (`procedimentos`).
 2. Inclua no array `EQUIPAMENTOS_AR` em `content/index.ts`.
 
 A cena registra o alvo novo sozinha. Não é preciso mexer em `scene/` nem em `ui/`.

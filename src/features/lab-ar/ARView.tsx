@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { acoesAR } from './arStore';
+import { EQUIPAMENTOS_AR } from './content';
 import { LabRecognitionScene } from './scene/LabRecognitionScene';
 import { ARHud } from './ui/ARHud';
 
@@ -17,7 +18,8 @@ export function ARView() {
     <View style={styles.container}>
       <ViroARSceneNavigator
         autofocus
-        numberOfTrackedImages={1}
+        // Um alvo por face/equipamento: com 1, o ARCore nao reconhece a parte de tras enquanto ainda guarda a frente.
+        numberOfTrackedImages={EQUIPAMENTOS_AR.length}
         initialScene={{ scene: LabRecognitionScene }}
         style={styles.container}
       />

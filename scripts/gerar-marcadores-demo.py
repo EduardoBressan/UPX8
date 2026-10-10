@@ -1,9 +1,10 @@
 """
-Gera as imagens de referencia (targets) de DEMONSTRACAO usadas pelo
-reconhecimento de imagem (ViroARImageMarker):
+Gera a imagem de referencia (target) de DEMONSTRACAO da protoboard usada
+pelo reconhecimento de imagem (ViroARImageMarker):
 
-  assets/markers/multimetro-demo.png  -> painel frontal estilizado de um multimetro
   assets/markers/protoboard-demo.png  -> protoboard estilizada
+
+(O alvo do alicate FT-266 vem de uma foto real: ver scripts/gerar-alvo-ft266.py.)
 
 Servem para testar o app sem ter o equipamento real em maos: abra a imagem
 na tela do computador ou imprima no tamanho indicado em
@@ -49,49 +50,6 @@ def centralizado(draw, xy, texto, f, cor):
     caixa = draw.textbbox((0, 0), texto, font=f)
     w, h = caixa[2] - caixa[0], caixa[3] - caixa[1]
     draw.text((xy[0] - w / 2, xy[1] - h / 2 - caixa[1]), texto, font=f, fill=cor)
-
-
-def multimetro():
-    W, H = 1000, 1600
-    img = Image.new("RGB", (W, H), "white")
-    d = ImageDraw.Draw(img)
-    textura_borda(d, W, H, 60, semente=7)
-
-    # Corpo
-    d.rounded_rectangle([90, 90, W - 90, H - 90], radius=60, fill="#F2B705", outline="#222222", width=8)
-    d.rounded_rectangle([130, 130, W - 130, H - 130], radius=40, fill="#2B2B2B")
-    centralizado(d, (W / 2, 190), "RA LAB  DT-830", fonte(48), "#F2B705")
-
-    # Display (centro aprox. u=0.50, v=0.20)
-    d.rectangle([200, 240, 800, 400], fill="#A8B89A", outline="#111111", width=6)
-    centralizado(d, (500, 320), "-12.48 V", fonte(96), "#1B1B1B")
-
-    # Seletor rotativo (centro u=0.50, v=0.49)
-    cx, cy, r = 500, 780, 210
-    d.ellipse([cx - r - 90, cy - r - 90, cx + r + 90, cy + r + 90], fill="#3A3A3A")
-    posicoes = [
-        ("OFF", -90), ("DCV", -45), ("ACV", 0), ("DCA", 45), ("10A", 90),
-        ("hFE", 135), ("•)))", 180), ("Ω", 225),
-    ]
-    import math
-    for rotulo, ang in posicoes:
-        a = math.radians(ang)
-        tx, ty = cx + (r + 55) * math.cos(a), cy + (r + 55) * math.sin(a)
-        centralizado(d, (tx, ty), rotulo, fonte(40), "#FFFFFF")
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill="#111111", outline="#F2B705", width=8)
-    d.polygon([(cx - 30, cy), (cx + 30, cy), (cx + 8, cy - r + 20), (cx - 8, cy - r + 20)], fill="#F2B705")
-    centralizado(d, (cx, cy + 60), "FUNÇÃO", fonte(34), "#BBBBBB")
-
-    # Bornes (v=0.84): 10A u=0.25, COM u=0.50, VΩmA u=0.75
-    bornes = [("10A", 250, "#C62828"), ("COM", 500, "#111111"), ("VΩmA", 750, "#C62828")]
-    for rotulo, x, cor in bornes:
-        y = 1350
-        d.ellipse([x - 70, y - 70, x + 70, y + 70], fill="#DDDDDD", outline=cor, width=14)
-        d.ellipse([x - 25, y - 25, x + 25, y + 25], fill="#000000")
-        centralizado(d, (x, y - 115), rotulo, fonte(44), "#FFFFFF")
-    centralizado(d, (500, 1450), "MAX 600V CAT II    10A FUSED", fonte(28, False), "#BBBBBB")
-
-    img.save(os.path.join(SAIDA, "multimetro-demo.png"))
 
 
 def protoboard():
@@ -146,6 +104,5 @@ def protoboard():
 
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
-    multimetro()
     protoboard()
     print("Marcadores gerados em", SAIDA)

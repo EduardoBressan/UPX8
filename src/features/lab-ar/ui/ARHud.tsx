@@ -8,7 +8,7 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import { acoesAR, EstadoAR, useEstadoAR } from '../arStore';
-import { buscarEquipamento, EQUIPAMENTOS_AR } from '../content';
+import { buscarEquipamento } from '../content';
 import { EquipamentoAR, Hotspot, Procedimento } from '../types';
 
 import { AlertaCard } from './AlertaCard';
@@ -16,11 +16,8 @@ import { AlertaCard } from './AlertaCard';
 function mensagemDeStatus(estado: EstadoAR, equipamento: EquipamentoAR | null): string {
   if (estado.rastreamento === 'limitado') return 'Mova o celular mais devagar e melhore a iluminação.';
   if (estado.rastreamento === 'indisponivel' || estado.rastreamento === 'iniciando') return 'Iniciando a câmera de RA…';
-  if (!equipamento) {
-    const nomes = EQUIPAMENTOS_AR.map((e) => e.nome.toLowerCase()).join(' ou ');
-    return `Aponte a câmera para o ${nomes}.`;
-  }
-  if (!estado.equipamentoVisivel) return `${equipamento.nome} fora de vista. Aponte a câmera para ele de novo.`;
+  if (!equipamento) return 'Aponte a câmera para um equipamento ou circuito, de perto.';
+  if (!estado.equipamentoVisivel) return `${equipamento.nome}: posição mantida. Aproxime o celular para reajustar.`;
   return `${equipamento.nome} reconhecido`;
 }
 

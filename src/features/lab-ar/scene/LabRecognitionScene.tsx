@@ -55,10 +55,10 @@ function hotspotEmDestaque(equipamento: EquipamentoAR, estado: EstadoAR): string
   return estado.hotspotId;
 }
 
-/** Com o modelo 3D visivel, o pino fica na superficie do modelo; sem ele, direto sobre a imagem reconhecida. */
+/** Altura do pino: a da propria parte, mais a espessura do modelo quando ele esta apoiado sobre a imagem. */
 function alturaDoPino(equipamento: EquipamentoAR, hotspot: Hotspot, mostrarModelo: boolean): number {
-  if (!equipamento.modelo3D || !mostrarModelo) return 0;
-  return (equipamento.modelo3D.alturaSuperficie ?? 0) + (hotspot.alturaExtraNoModelo ?? 0);
+  const superficie = equipamento.modelo3D && mostrarModelo ? (equipamento.modelo3D.alturaSuperficie ?? 0) : 0;
+  return superficie + (hotspot.alturaExtra ?? 0);
 }
 
 function aparenciaDo(hotspot: Hotspot, destaque: string | null, emProcedimento: boolean): AparenciaHotspot {
@@ -81,8 +81,14 @@ export function LabRecognitionScene() {
 
       {EQUIPAMENTOS_AR.map((equipamento) => {
         const ativo = estado.equipamentoId === equipamento.id;
+        // Depois de reconhecido, o conteudo continua preso ao equipamento mesmo quando a imagem sai de vista
+        // ou fica pequena demais (o ARCore mantem a ultima posicao no mundo, certa para o aparelho parado na
+        // mesa). So o equipamento ativo aparece: ao virar o aparelho, a frente da lugar a parte de tras assim
+        // que ela for reconhecida.
         const destaque = ativo ? hotspotEmDestaque(equipamento, estado) : null;
         const emProcedimento = ativo && estado.procedimento !== null;
+        // A parte em destaque (tocada ou do passo atual do guia) anima no modelo, ex.: Data Hold sendo pressionado.
+        const animacao = equipamento.hotspots.find((h) => h.id === destaque)?.animacaoModelo;
 
         return (
           <ViroARImageMarker
@@ -95,7 +101,7 @@ export function LabRecognitionScene() {
               else acoesAR.equipamentoForaDeVista(equipamento.id);
             }}
             onAnchorRemoved={() => acoesAR.equipamentoPerdido(equipamento.id)}>
-            {equipamento.modelo3D && estado.mostrarModelo && (
+            {ativo && equipamento.modelo3D && estado.mostrarModelo && (
               <Viro3DObject
                 source={equipamento.modelo3D.fonte}
                 resources={equipamento.modelo3D.recursos}
@@ -103,25 +109,27 @@ export function LabRecognitionScene() {
                 position={equipamento.modelo3D.posicao}
                 rotation={equipamento.modelo3D.rotacao}
                 scale={equipamento.modelo3D.escala}
+                animation={{ name: animacao, run: animacao !== undefined, loop: true }}
                 ignoreEventHandling
               />
             )}
 
-            {equipamento.hotspots.map((hotspot) => (
-              <HotspotMarker3D
-                key={hotspot.id}
-                posicao={posicaoNoAlvo(equipamento, hotspot.posicao, alturaDoPino(equipamento, hotspot, estado.mostrarModelo))}
-                numero={hotspot.numero}
-                rotulo={hotspot.rotuloCurto}
-                alturaEtiqueta={hotspot.alturaEtiqueta ?? ALTURA_ETIQUETA_PADRAO}
-                aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
-                mostrarEtiqueta={estado.mostrarEtiquetas}
-                onPress={() => {
-                  acoesAR.equipamentoReconhecido(equipamento.id);
-                  acoesAR.selecionarHotspot(hotspot.id);
-                }}
-              />
-            ))}
+            {ativo &&
+              equipamento.hotspots.map((hotspot) => (
+                <HotspotMarker3D
+                  key={hotspot.id}
+                  posicao={posicaoNoAlvo(equipamento, hotspot.posicao, alturaDoPino(equipamento, hotspot, estado.mostrarModelo))}
+                  numero={hotspot.numero}
+                  rotulo={hotspot.rotuloCurto}
+                  alturaEtiqueta={hotspot.alturaEtiqueta ?? ALTURA_ETIQUETA_PADRAO}
+                  aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
+                  mostrarEtiqueta={estado.mostrarEtiquetas}
+                  onPress={() => {
+                    acoesAR.equipamentoReconhecido(equipamento.id);
+                    acoesAR.selecionarHotspot(hotspot.id);
+                  }}
+                />
+              ))}
           </ViroARImageMarker>
         );
       })}

@@ -1,6 +1,6 @@
 # ⚡ RA Lab — Realidade Aumentada para Laboratório de Eletrônica
 
-Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em laboratórios de eletrônica. O aluno aponta a câmera do celular para um equipamento (por exemplo, um multímetro ou uma protoboard) e o app:
+Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em laboratórios de eletrônica. O aluno aponta a câmera do celular para um equipamento (hoje, o **multímetro FT-266** e uma protoboard) e o app:
 
 - **reconhece o equipamento** pela câmera;
 - mostra um **modelo 3D** sobre a peça real;
@@ -24,7 +24,8 @@ Cada equipamento tem uma **imagem de referência** cadastrada. Quando a câmera 
 
 | Equipamento | Partes explicadas | Guias de uso |
 |---|---|---|
-| Multímetro digital | Display, seletor de função, bornes 10A, COM e VΩmA | Tensão DC, resistência, corrente DC, continuidade |
+| Multímetro FT-266, frente (equipamento real, com modelo 3D próprio) | Seletor, display, bornes V Ω / COM / EXT, botão Data Hold | Tensão DC, tensão AC, resistência, continuidade |
+| Multímetro FT-266, parte de trás | Etiqueta de aviso, parafuso e tampa da bateria | Trocar a bateria |
 | Protoboard | Barramentos + e −, colunas conectadas, canal central, coordenadas | Montar LED com resistor, encaixar um CI |
 
 ## Tecnologias
@@ -80,16 +81,19 @@ Se não conectar, libere o Node.js no firewall do Windows ou use `npx expo start
 
 Mudanças no código aparecem na hora. Se precisar, aperte `r` no terminal para recarregar.
 
-## Como testar sem o equipamento
+## Como testar
 
-O projeto traz imagens e modelos de **demonstração**:
+**Com o multímetro FT-266 real:**
 
-1. no computador, abra `assets/markers/multimetro-demo.png` e ajuste o zoom até a imagem ficar com **cerca de 12 cm de largura** na tela (ou imprima nesse tamanho);
-2. no app, toque em **Abrir câmera de RA** e permita a câmera;
-3. aponte o celular para a imagem a uns 30 cm e mova devagar;
-4. o multímetro 3D aparece sobre a imagem: toque nos números e experimente os **Guias de uso**.
+1. deite o multímetro numa mesa, com o painel para cima e o **seletor em OFF** (como na foto de referência);
+2. no app, toque em **Abrir câmera** e permita a câmera;
+3. aponte o celular para o painel a uns 30 cm e mova devagar;
+4. o modelo 3D aparece sobre o aparelho real: toque nos números e experimente os **Guias de uso**. As partes usadas em cada passo acendem em laranja (e o botão Data Hold é pressionado no modelo);
+5. vire o multímetro com a parte de trás para cima: o app reconhece o outro lado e mostra a tampa da bateria e o guia **Trocar a bateria**.
 
-Para a protoboard, use `assets/markers/protoboard-demo.png` com **cerca de 16,5 cm** de largura.
+**Sem o multímetro:** abra `assets/markers/ft266-frente.jpg` (ou `ft266-traseira.jpg`) na tela do computador com **6,5 cm de largura** (a largura real do corpo do aparelho) e aponte o celular para ela.
+
+**Protoboard de demonstração:** use `assets/markers/protoboard-demo.png` com **cerca de 16,5 cm** de largura.
 
 **Se não reconhecer:** diminua o brilho do monitor (reflexo atrapalha), segure o celular de frente para a tela e mova devagar. Imagens impressas costumam funcionar melhor.
 
@@ -102,7 +106,7 @@ src/
 │   └── ar.tsx                Tela da câmera de RA
 └── features/lab-ar/          Toda a realidade aumentada
     ├── content/              ← CONTEÚDO DIDÁTICO (partes, guias, alertas)
-    │   ├── multimetro.ts
+    │   ├── multimetro-ft266.ts   (frente e parte de trás)
     │   ├── protoboard.ts
     │   └── index.ts          Lista de tudo que o app reconhece
     ├── scene/                Cena 3D do ViroReact (alvos, pinos, etiquetas)
@@ -115,8 +119,9 @@ assets/
 └── models/                   Modelos 3D (.glb)
 
 scripts/
-├── gerar-marcadores-demo.py  Gera as imagens de demonstração
-└── gerar-modelos-demo.py     Gera os modelos 3D de demonstração
+├── gerar-alvo-ft266.py       Gera a imagem de referência do FT-266 a partir da foto
+├── gerar-marcadores-demo.py  Gera a imagem de demonstração da protoboard
+└── gerar-modelos-demo.py     Gera o modelo 3D de demonstração da protoboard
 
 docs/RA-RECONHECIMENTO.md     Guia detalhado de personalização
 ```
@@ -126,9 +131,15 @@ docs/RA-RECONHECIMENTO.md     Guia detalhado de personalização
 Tudo está explicado em **[docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md)**. Resumo:
 
 - **Usar o equipamento real do laboratório:** fotografe o painel, salve em `assets/markers/`, meça a largura real e recalcule as posições das partes no arquivo de conteúdo.
-- **Trocar o modelo 3D:** coloque o `.glb` em `assets/models/` e aponte para ele em `content/multimetro.ts`. Bons lugares para encontrar modelos: [Sketchfab](https://sketchfab.com) (filtro "downloadable", formato glTF/GLB) e [Poly Pizza](https://poly.pizza). Confira sempre a licença.
-- **Adicionar um equipamento novo** (ex.: osciloscópio): copie `content/multimetro.ts`, preencha e inclua em `content/index.ts`. Não é preciso mexer na cena 3D.
-- **Regerar as imagens/modelos de demonstração** (requer Python com Pillow):
+- **Trocar o modelo 3D:** coloque o `.glb` em `assets/models/` e aponte para ele no arquivo de conteúdo (ex.: `content/multimetro-ft266.ts`). Bons lugares para encontrar modelos: [Sketchfab](https://sketchfab.com) (filtro "downloadable", formato glTF/GLB) e [Poly Pizza](https://poly.pizza). Confira sempre a licença.
+- **Adicionar um equipamento novo** (ex.: osciloscópio): copie `content/multimetro-ft266.ts`, preencha e inclua em `content/index.ts`. Não é preciso mexer na cena 3D.
+- **Regerar as imagens de referência do FT-266** (frente e trás) a partir das fotos em `docs/fotos/`. O script também imprime a posição de cada parte e gera `docs/fotos/ft266-*-conferencia.jpg` para conferir:
+
+  ```bash
+  python scripts/gerar-alvo-ft266.py
+  ```
+
+- **Regerar a protoboard de demonstração** (requer Python com Pillow):
 
   ```bash
   python scripts/gerar-marcadores-demo.py
@@ -149,4 +160,5 @@ A primeira versão identificava componentes numa foto usando a IA Google Gemini 
 ## Créditos
 
 - Estrutura de realidade aumentada baseada nos templates **WL01 Recognition AR** e **WL02 Spatial AR** fornecidos pelo professor.
-- Modelos e imagens de demonstração gerados pelos scripts em `scripts/`.
+- Modelo 3D do FT-266 (`assets/models/alicate-ft266.glb`) feito pela equipe no Blender.
+- Imagem e modelo de demonstração da protoboard gerados pelos scripts em `scripts/`.

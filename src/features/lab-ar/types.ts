@@ -37,8 +37,13 @@ export interface Hotspot {
   posicao: PontoNaImagem;
   /** Altura da etiqueta acima da peca, em metros. Use para evitar sobreposicao entre etiquetas vizinhas. */
   alturaEtiqueta?: number;
-  /** Quanto esta parte fica acima da superficie do modelo 3D (ex.: botao saltado), em metros. */
-  alturaExtraNoModelo?: number;
+  /**
+   * Altura da parte em relacao ao plano da imagem reconhecida, em metros: positiva para pecas
+   * saltadas (ex.: botao do seletor), negativa para partes abaixo dele (ex.: botao lateral).
+   */
+  alturaExtra?: number;
+  /** Nome de uma animacao do modelo 3D (.glb) tocada enquanto esta parte esta em destaque. */
+  animacaoModelo?: string;
   oQueE: string;
   comoUsar: string;
   dica?: string;
@@ -73,7 +78,11 @@ export interface Modelo3D {
   posicao: Vec3;
   rotacao: Vec3;
   escala: Vec3;
-  /** Altura da face de cima do modelo (em metros). Com o modelo visivel, os pinos sobem ate ela para nao ficarem escondidos dentro dele. */
+  /**
+   * Quanto o modelo sobe acima da imagem reconhecida (em metros). Use quando o modelo fica APOIADO
+   * sobre a imagem (ex.: protoboard de demonstracao); com o modelo visivel, os pinos sobem junto.
+   * Deixe 0 quando o modelo se sobrepoe ao equipamento real (a imagem e a propria face do aparelho).
+   */
   alturaSuperficie?: number;
 }
 

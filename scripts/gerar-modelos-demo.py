@@ -1,7 +1,6 @@
 """
-Gera modelos 3D (.glb) de DEMONSTRACAO a partir das imagens de referencia:
+Gera o modelo 3D (.glb) de DEMONSTRACAO da protoboard a partir da imagem de referencia:
 
-  assets/models/multimetro-demo.glb  -> corpo com espessura, seletor rotativo e bornes em relevo
   assets/models/protoboard-demo.glb  -> placa com espessura
 
 A face de cima de cada modelo usa a propria imagem de referencia como
@@ -18,7 +17,6 @@ modelos feitos no Blender/Sketchfab (ver docs/RA-RECONHECIMENTO.md).
 Uso:  python scripts/gerar-modelos-demo.py   (sem dependencias extras)
 """
 import json
-import math
 import os
 import struct
 
@@ -81,19 +79,6 @@ def caixa(malha, x0, x1, y0, y1, z0, z1, pular_topo=False):
         if pular_topo and normal == (0, 1, 0):
             continue
         malha.quad(a, b, c, d, normal)
-
-
-def cilindro(malha, cx, cz, raio, y0, y1, segmentos=40, tampa=True):
-    for i in range(segmentos):
-        t0 = 2 * math.pi * i / segmentos
-        t1 = 2 * math.pi * (i + 1) / segmentos
-        p0 = (cx + raio * math.cos(t0), cz + raio * math.sin(t0))
-        p1 = (cx + raio * math.cos(t1), cz + raio * math.sin(t1))
-        tm = (t0 + t1) / 2
-        normal = (math.cos(tm), 0, math.sin(tm))
-        malha.quad((p0[0], y0, p0[1]), (p1[0], y0, p1[1]), (p1[0], y1, p1[1]), (p0[0], y1, p0[1]), normal)
-        if tampa:
-            malha.tri((cx, y1, cz), (p0[0], y1, p0[1]), (p1[0], y1, p1[1]), (0, 1, 0))
 
 
 def topo_texturizado(malha, largura, altura, y):
@@ -180,44 +165,6 @@ def png_reduzido(nome, largura_max=1024):
     return img.size, saida.getvalue()
 
 
-def multimetro():
-    # Mesmas medidas do alvo: 12 cm de largura (larguraFisicaMetros) e proporcao 1000x1600 da imagem.
-    (pw, ph), png = png_reduzido("multimetro-demo.png")
-    L = 0.12
-    A = L * ph / pw
-    E = 0.032  # espessura do corpo (3,2 cm)
-
-    def xz(u, v):
-        return (u - 0.5) * L, (v - 0.5) * A
-
-    painel, corpo, preto, borne_vermelho, cinza = (Malha(0, True), Malha(1), Malha(2), Malha(3), Malha(4))
-    topo_texturizado(painel, L, A, E)
-    caixa(corpo, -L / 2, L / 2, 0, E, -A / 2, A / 2, pular_topo=True)
-
-    # Seletor rotativo saltado (centro u=0.5, v=0.4875; raio de 210 px em 1000 px)
-    cx, cz = xz(0.5, 0.4875)
-    raio = 0.21 * L
-    cilindro(preto, cx, cz, raio, E, E + 0.007)
-    # Ponteiro do seletor (aponta para OFF, para cima da imagem)
-    caixa(borne_vermelho, cx - 0.002, cx + 0.002, E + 0.007, E + 0.010, cz - raio * 0.85, cz - raio * 0.15)
-
-    # Bornes em relevo (v=0.844; u=0.25 / 0.5 / 0.75; raio externo 70 px)
-    for u, malha_anel in ((0.25, borne_vermelho), (0.5, preto), (0.75, borne_vermelho)):
-        bx, bz = xz(u, 0.844)
-        cilindro(malha_anel, bx, bz, 0.07 * L, E, E + 0.005)
-        cilindro(cinza, bx, bz, 0.025 * L, E + 0.005, E + 0.0055)
-
-    materiais = [
-        material("painel", [1, 1, 1, 1], textura=True, rugosidade=0.5),
-        material("corpo", cor("#F2B705"), rugosidade=0.6),
-        material("preto", cor("#151515"), rugosidade=0.4),
-        material("vermelho", cor("#C62828"), rugosidade=0.5),
-        material("furo", cor("#050505"), rugosidade=0.9),
-    ]
-    salvar_glb(os.path.join(SAIDA, "multimetro-demo.glb"), [painel, corpo, preto, borne_vermelho, cinza], materiais, png)
-    return E
-
-
 def protoboard():
     (pw, ph), png = png_reduzido("protoboard-demo.png", largura_max=1650)
     L = 0.165
@@ -236,6 +183,5 @@ def protoboard():
 
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
-    print("multimetro: espessura", multimetro(), "m")
     print("protoboard: espessura", protoboard(), "m")
     print("Modelos gerados em", SAIDA)
