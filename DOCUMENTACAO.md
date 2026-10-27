@@ -2,7 +2,7 @@
 
 Documentação técnica do MVP implementado. Este documento é o relatório do que foi construído, as decisões tomadas e como rodar/testar o projeto.
 
-> **Atualização: RA 3D por reconhecimento de imagem.** O fluxo principal do app passou a ser a RA ao vivo com ViroReact (padrão WL01 do professor): a câmera reconhece o equipamento, ancora pinos e etiquetas 3D em cada parte e mostra guias de uso passo a passo. Isso substitui a decisão da seção 5.1 (overlay sobre foto parada). Detalhes, build pelo EAS e como cadastrar os equipamentos reais estão em [docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md). O fluxo antigo (foto → Gemini → marcadores 2D, rota `scanner/[mode]` + pasta `server/`) continua no código, mas não aparece mais na tela inicial.
+> **Atualização: RA 3D por reconhecimento de imagem.** O fluxo principal do app passou a ser a RA ao vivo com ViroReact (padrão WL01 do professor): a câmera reconhece o equipamento, ancora pinos e etiquetas 3D em cada parte e mostra guias de uso passo a passo. Isso substitui a decisão da seção 5.1 (overlay sobre foto parada). Detalhes, build pelo EAS e como cadastrar os equipamentos reais estão em [docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md). O fluxo antigo (foto → Gemini → marcadores 2D) descrito abaixo **foi removido do código** (fica no histórico do Git); o backend em `server/` também foi removido: a tela de Circuitos usa o mesmo reconhecimento de imagem dos equipamentos ([docs/CIRCUITOS.md](docs/CIRCUITOS.md)).
 
 ## 1. Visão geral
 

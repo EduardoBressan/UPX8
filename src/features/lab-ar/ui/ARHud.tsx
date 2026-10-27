@@ -13,16 +13,16 @@ import { EquipamentoAR, Hotspot, Procedimento } from '../types';
 
 import { AlertaCard } from './AlertaCard';
 
-function mensagemDeStatus(estado: EstadoAR, equipamento: EquipamentoAR | null): string {
+function mensagemDeStatus(estado: EstadoAR, equipamento: EquipamentoAR | null, dica: string): string {
   if (estado.rastreamento === 'limitado') return 'Mova o celular mais devagar e melhore a iluminação.';
   if (estado.rastreamento === 'indisponivel' || estado.rastreamento === 'iniciando') return 'Iniciando a câmera de RA…';
-  if (!equipamento) return 'Aponte a câmera para um equipamento ou circuito, de perto.';
+  if (!equipamento) return dica;
   if (!estado.equipamentoVisivel) return `${equipamento.nome}: posição mantida. Aproxime o celular para reajustar.`;
   return `${equipamento.nome} reconhecido`;
 }
 
 /** Interface 2D por cima da camera de RA: status, controles e paineis de explicacao. */
-export function ARHud() {
+export function ARHud({ dica }: { dica: string }) {
   const router = useRouter();
   const theme = useTheme();
   const estado = useEstadoAR();
@@ -42,7 +42,7 @@ export function ARHud() {
         <ThemedView type="backgroundElement" style={styles.status}>
           <View style={[styles.indicador, { backgroundColor: reconhecido ? '#2E7D32' : theme.warning }]} />
           <ThemedText type="small" style={styles.statusTexto}>
-            {mensagemDeStatus(estado, equipamento)}
+            {mensagemDeStatus(estado, equipamento, dica)}
           </ThemedText>
         </ThemedView>
       </View>

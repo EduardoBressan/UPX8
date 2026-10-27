@@ -10,6 +10,10 @@ Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em lab
 
 > Projeto acadêmico. O conteúdo é educacional: em procedimentos de risco, siga sempre a orientação do professor.
 
+## Circuitos montados na protoboard (novo)
+
+Na tela inicial há dois caminhos: **Equipamentos** (o multímetro, como descrito abaixo) e **Circuitos**. Em Circuitos, o app lê **qualquer circuito simples** montado na protoboard: o aluno toca em **Analisar circuito** (rápida, ~15 s, ou detalhada, 2 a 4 min), a IA identifica os componentes e onde cada perna está, o aluno confere/corrige a leitura e o app **monta o circuito numa protoboard virtual em 3D, colocada na mesa ao lado da real** (com as ligações destacadas em cores), explicando cada componente, o que está em série e em paralelo e como ler o código de cores dos resistores. Precisa do backend rodando (`cd server && npm run dev`). Detalhes em **[docs/CIRCUITOS.md](docs/CIRCUITOS.md)**.
+
 ## Como funciona
 
 O app segue o padrão **WL01 (Recognition AR)** com [ViroReact](https://viro-community.readme.io/):
@@ -146,9 +150,9 @@ Tudo está explicado em **[docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md)
   python scripts/gerar-modelos-demo.py
   ```
 
-## Versão anterior (identificação por IA)
+## Versão anterior (identificação por foto)
 
-A primeira versão identificava componentes numa foto usando a IA Google Gemini (backend em `server/`, tela `src/app/scanner/`). Esse código continua no repositório para referência, mas não aparece mais no app. A documentação dela está em [DOCUMENTACAO.md](DOCUMENTACAO.md).
+A primeira versão marcava componentes sobre uma foto parada, com a IA. Esse código foi removido (a análise de circuitos substituiu essa ideia); ele continua no histórico do Git e está descrito em [DOCUMENTACAO.md](DOCUMENTACAO.md).
 
 ## Limitações conhecidas
 

@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Href, Link } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,11 +7,57 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-const PASSOS = [
-  'Abra a câmera e aponte para o equipamento ou a placa.',
-  'Toque nos números para saber o que é cada parte.',
-  'Siga os guias passo a passo para usar com segurança.',
+interface Opcao {
+  href: Href;
+  icone: string;
+  titulo: string;
+  descricao: string;
+}
+
+const OPCOES: Opcao[] = [
+  {
+    href: '/ar',
+    icone: '🔧',
+    titulo: 'Equipamentos',
+    descricao: 'Aponte para o multímetro e veja o que cada parte faz, com guias de medição.',
+  },
+  {
+    href: '/circuito',
+    icone: '🔌',
+    titulo: 'Circuitos',
+    descricao: 'Aponte para o circuito montado e veja cada componente em 3D.',
+  },
 ];
+
+function CartaoOpcao({ opcao }: { opcao: Opcao }) {
+  const theme = useTheme();
+  return (
+    <Link href={opcao.href} asChild>
+      <Pressable accessibilityRole="button" accessibilityLabel={opcao.titulo}>
+        {({ pressed }) => (
+          <ThemedView
+            type="backgroundElement"
+            style={[styles.cartao, { borderColor: theme.border }, pressed && styles.pressionado]}>
+            <ThemedView type="background" style={styles.icone}>
+              <ThemedText style={styles.emoji}>{opcao.icone}</ThemedText>
+            </ThemedView>
+            <View style={styles.cartaoTextos}>
+              <ThemedText type="smallBold" style={styles.cartaoTitulo}>
+                {opcao.titulo}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                {opcao.descricao}
+              </ThemedText>
+            </View>
+            <ThemedText type="subtitle" themeColor="textSecondary" style={styles.seta}>
+              ›
+            </ThemedText>
+          </ThemedView>
+        )}
+      </Pressable>
+    </Link>
+  );
+}
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -27,46 +73,20 @@ export default function HomeScreen() {
           <View style={styles.textos}>
             <ThemedText style={styles.titulo}>Entenda equipamentos e circuitos na prática</ThemedText>
             <ThemedText type="default" themeColor="textSecondary">
-              Aponte a câmera para um equipamento ou circuito do laboratório e veja, em 3D, o que cada parte faz e
-              como usar.
+              Escolha o que você quer estudar com a câmera em realidade aumentada.
             </ThemedText>
           </View>
 
-          <View style={styles.passos}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              COMO FUNCIONA
-            </ThemedText>
-            {PASSOS.map((passo, indice) => (
-              <View key={passo} style={styles.passo}>
-                <ThemedView type="infoBackground" style={styles.numero}>
-                  <ThemedText type="smallBold" themeColor="info">
-                    {indice + 1}
-                  </ThemedText>
-                </ThemedView>
-                <ThemedText type="default" style={styles.textoPasso}>
-                  {passo}
-                </ThemedText>
-              </View>
+          <View style={styles.opcoes}>
+            {OPCOES.map((opcao) => (
+              <CartaoOpcao key={opcao.titulo} opcao={opcao} />
             ))}
           </View>
         </View>
 
-        <View style={styles.rodape}>
-          <Link href="/ar" asChild>
-            <Pressable accessibilityRole="button" accessibilityLabel="Abrir câmera de realidade aumentada">
-              {({ pressed }) => (
-                <View style={[styles.botao, { backgroundColor: theme.primary }, pressed && styles.pressionado]}>
-                  <ThemedText type="smallBold" themeColor="primaryText" style={styles.textoBotao}>
-                    Abrir câmera
-                  </ThemedText>
-                </View>
-              )}
-            </Pressable>
-          </Link>
-          <ThemedText type="small" themeColor="textSecondary" style={styles.aviso}>
-            Em medições de risco, siga sempre o professor.
-          </ThemedText>
-        </View>
+        <ThemedText type="small" themeColor="textSecondary" style={styles.aviso}>
+          Em medições de risco, siga sempre o professor.
+        </ThemedText>
       </SafeAreaView>
     </ThemedView>
   );
@@ -105,38 +125,42 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     fontWeight: 700,
   },
-  passos: {
+  opcoes: {
     gap: Spacing.three,
   },
-  passo: {
+  cartao: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: Spacing.three,
   },
-  numero: {
-    width: 28,
-    height: 28,
+  pressionado: {
+    opacity: 0.7,
+  },
+  icone: {
+    width: 52,
+    height: 52,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textoPasso: {
+  emoji: {
+    fontSize: 26,
+    lineHeight: 32,
+  },
+  cartaoTextos: {
     flex: 1,
+    gap: 2,
   },
-  rodape: {
-    gap: Spacing.two,
-  },
-  botao: {
-    height: 56,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressionado: {
-    opacity: 0.85,
-  },
-  textoBotao: {
+  cartaoTitulo: {
     fontSize: 17,
+    lineHeight: 22,
+  },
+  seta: {
+    fontSize: 28,
+    lineHeight: 32,
   },
   aviso: {
     textAlign: 'center',

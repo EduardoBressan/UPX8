@@ -10,7 +10,7 @@ import {
 } from '@reactvision/react-viro';
 
 import { acoesAR, EstadoAR, Rastreamento, useEstadoAR } from '../arStore';
-import { EQUIPAMENTOS_AR } from '../content';
+import { CIRCUITOS_AR, EQUIPAMENTOS_AR } from '../content';
 import { nomeDoAlvo, posicaoNoAlvo } from '../geometry';
 import { EquipamentoAR, Hotspot } from '../types';
 
@@ -18,10 +18,10 @@ import { AparenciaHotspot, HotspotMarker3D } from './HotspotMarker3D';
 
 const ALTURA_ETIQUETA_PADRAO = 0.03;
 
-// Registro dos alvos (feito uma vez, no carregamento do modulo — mesmo padrao do WL01).
+// Registro dos alvos de todos os catalogos (feito uma vez, no carregamento do modulo — mesmo padrao do WL01).
 ViroARTrackingTargets.createTargets(
   Object.fromEntries(
-    EQUIPAMENTOS_AR.map((equipamento) => [
+    [...EQUIPAMENTOS_AR, ...CIRCUITOS_AR].map((equipamento) => [
       nomeDoAlvo(equipamento),
       {
         source: equipamento.alvo.imagem,
@@ -70,8 +70,9 @@ function aparenciaDo(hotspot: Hotspot, destaque: string | null, emProcedimento: 
 /**
  * Cena de RA por reconhecimento de imagem (padrao WL01):
  * camera -> reconhece a imagem do equipamento -> ancora -> pinos 3D + modelo -> toque.
+ * Recebe o catalogo da tela (equipamentos ou circuitos): so os alvos dele sao procurados.
  */
-export function LabRecognitionScene() {
+export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
   const estado = useEstadoAR();
 
   return (
@@ -79,7 +80,7 @@ export function LabRecognitionScene() {
       <ViroAmbientLight color="#FFFFFF" intensity={300} />
       <ViroDirectionalLight color="#FFFFFF" direction={[0, -1, -0.3]} intensity={500} />
 
-      {EQUIPAMENTOS_AR.map((equipamento) => {
+      {itens.map((equipamento) => {
         const ativo = estado.equipamentoId === equipamento.id;
         // Depois de reconhecido, o conteudo continua preso ao equipamento mesmo quando a imagem sai de vista
         // ou fica pequena demais (o ARCore mantem a ultima posicao no mundo, certa para o aparelho parado na
