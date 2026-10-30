@@ -1,6 +1,6 @@
 # ⚡ RA Lab — Realidade Aumentada para Laboratório de Eletrônica
 
-Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em laboratórios de eletrônica. O aluno aponta a câmera do celular para um equipamento (hoje, o **multímetro FT-266** e uma protoboard) e o app:
+Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em laboratórios de eletrônica. O aluno aponta a câmera do celular para um equipamento (o **multímetro FT-266** e uma protoboard) ou para um **circuito montado** (ESP32 + LED) e o app:
 
 - **reconhece o equipamento** pela câmera;
 - mostra um **modelo 3D** sobre a peça real;
@@ -9,6 +9,13 @@ Aplicativo Android que usa **realidade aumentada** para ajudar estudantes em lab
 - oferece **guias passo a passo** ("Medir tensão DC", "Montar um LED com resistor"...), acendendo na própria peça a parte usada em cada passo.
 
 > Projeto acadêmico. O conteúdo é educacional: em procedimentos de risco, siga sempre a orientação do professor.
+
+## Equipamentos e Circuitos
+
+A tela inicial tem dois caminhos, que usam o mesmo mecanismo de reconhecimento:
+
+- **Equipamentos**: multímetro FT-266 (frente e parte de trás) e protoboard;
+- **Circuitos**: circuito ESP32 + LED montado na protoboard. O app reconhece a placa do ESP32, coloca o modelo 3D do circuito sobre a montagem real e explica cada parte (ESP32, pino D2, resistor, LED e fios), com guias para seguir o caminho da corrente e conferir a montagem com o multímetro. Detalhes em **[docs/CIRCUITOS.md](docs/CIRCUITOS.md)**.
 
 ## Como funciona
 
@@ -27,6 +34,7 @@ Cada equipamento tem uma **imagem de referência** cadastrada. Quando a câmera 
 | Multímetro FT-266, frente (equipamento real, com modelo 3D próprio) | Seletor, display, bornes V Ω / COM / EXT, botão Data Hold | Tensão DC, tensão AC, resistência, continuidade |
 | Multímetro FT-266, parte de trás | Etiqueta de aviso, parafuso e tampa da bateria | Trocar a bateria |
 | Protoboard | Barramentos + e −, colunas conectadas, canal central, coordenadas | Montar LED com resistor, encaixar um CI |
+| Circuito ESP32 + LED (com modelo 3D próprio) | ESP32, pino D2, fio de GND, resistor 1 kΩ, LED, fio do catodo | Caminho da corrente, conferir a montagem com o multímetro |
 
 ## Tecnologias
 
@@ -86,7 +94,7 @@ Mudanças no código aparecem na hora. Se precisar, aperte `r` no terminal para 
 **Com o multímetro FT-266 real:**
 
 1. deite o multímetro numa mesa, com o painel para cima e o **seletor em OFF** (como na foto de referência);
-2. no app, toque em **Abrir câmera** e permita a câmera;
+2. no app, toque em **Equipamentos** e permita a câmera;
 3. aponte o celular para o painel a uns 30 cm e mova devagar;
 4. o modelo 3D aparece sobre o aparelho real: toque nos números e experimente os **Guias de uso**. As partes usadas em cada passo acendem em laranja (e o botão Data Hold é pressionado no modelo);
 5. vire o multímetro com a parte de trás para cima: o app reconhece o outro lado e mostra a tampa da bateria e o guia **Trocar a bateria**.
@@ -94,6 +102,8 @@ Mudanças no código aparecem na hora. Se precisar, aperte `r` no terminal para 
 **Sem o multímetro:** abra `assets/markers/ft266-frente.jpg` (ou `ft266-traseira.jpg`) na tela do computador com **6,5 cm de largura** (a largura real do corpo do aparelho) e aponte o celular para ela.
 
 **Protoboard de demonstração:** use `assets/markers/protoboard-demo.png` com **cerca de 16,5 cm** de largura.
+
+**Circuito ESP32 + LED:** toque em **Circuitos** e aproxime o celular até o ESP32 ocupar cerca de metade da tela, de cima e com boa luz. Depois que o modelo aparecer, dá para afastar: ele fica preso na posição. Sem o circuito, abra `assets/markers/circuito-esp32-led.jpg` na tela com **2,6 cm** de largura.
 
 **Se não reconhecer:** diminua o brilho do monitor (reflexo atrapalha), segure o celular de frente para a tela e mova devagar. Imagens impressas costumam funcionar melhor.
 
@@ -103,12 +113,14 @@ Mudanças no código aparecem na hora. Se precisar, aperte `r` no terminal para 
 src/
 ├── app/                      Telas (Expo Router)
 │   ├── index.tsx             Tela inicial
-│   └── ar.tsx                Tela da câmera de RA
+│   ├── ar.tsx                Câmera de RA: Equipamentos
+│   └── circuito.tsx          Câmera de RA: Circuitos
 └── features/lab-ar/          Toda a realidade aumentada
     ├── content/              ← CONTEÚDO DIDÁTICO (partes, guias, alertas)
     │   ├── multimetro-ft266.ts   (frente e parte de trás)
     │   ├── protoboard.ts
-    │   └── index.ts          Lista de tudo que o app reconhece
+    │   ├── circuito-esp32-led.ts
+    │   └── index.ts          Catálogos de Equipamentos e de Circuitos
     ├── scene/                Cena 3D do ViroReact (alvos, pinos, etiquetas)
     ├── ui/                   Interface 2D por cima da câmera
     ├── arStore.ts            Estado compartilhado entre a cena 3D e a interface
@@ -120,10 +132,12 @@ assets/
 
 scripts/
 ├── gerar-alvo-ft266.py       Gera a imagem de referência do FT-266 a partir da foto
+├── gerar-alvo-circuito-esp32.py  Gera a imagem de referência do circuito ESP32 + LED
 ├── gerar-marcadores-demo.py  Gera a imagem de demonstração da protoboard
 └── gerar-modelos-demo.py     Gera o modelo 3D de demonstração da protoboard
 
 docs/RA-RECONHECIMENTO.md     Guia detalhado de personalização
+docs/CIRCUITOS.md             Tela de Circuitos e como cadastrar um circuito novo
 ```
 
 ## Personalizando
@@ -146,19 +160,15 @@ Tudo está explicado em **[docs/RA-RECONHECIMENTO.md](docs/RA-RECONHECIMENTO.md)
   python scripts/gerar-modelos-demo.py
   ```
 
-## Versão anterior (identificação por IA)
-
-A primeira versão identificava componentes numa foto usando a IA Google Gemini (backend em `server/`, tela `src/app/scanner/`). Esse código continua no repositório para referência, mas não aparece mais no app. A documentação dela está em [DOCUMENTACAO.md](DOCUMENTACAO.md).
-
 ## Limitações conhecidas
 
 - Só reconhece o que estiver cadastrado em `src/features/lab-ar/content/`.
-- Protoboards reais são difíceis de reconhecer (grade repetitiva). Use um marcador impresso ao lado delas.
+- Protoboards reais são difíceis de reconhecer (grade repetitiva). Por isso o circuito é reconhecido pelo ESP32, e por isso é preciso chegar perto.
 - A posição dos pinos depende da largura física (`larguraFisicaMetros`) estar correta.
 - Configurado e testado apenas para Android.
 
 ## Créditos
 
 - Estrutura de realidade aumentada baseada nos templates **WL01 Recognition AR** e **WL02 Spatial AR** fornecidos pelo professor.
-- Modelo 3D do FT-266 (`assets/models/alicate-ft266.glb`) feito pela equipe no Blender.
+- Modelos 3D do FT-266 (`assets/models/alicate-ft266.glb`) e do circuito ESP32 + LED (`assets/models/circuito-esp32-led.glb`) feitos pela equipe no Blender.
 - Imagem e modelo de demonstração da protoboard gerados pelos scripts em `scripts/`.

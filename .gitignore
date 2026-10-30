@@ -33,7 +33,6 @@ yarn-error.*
 # local env files (nunca commitar chaves/segredos)
 .env
 .env*.local
-server/.env
 
 # typescript
 *.tsbuildinfo

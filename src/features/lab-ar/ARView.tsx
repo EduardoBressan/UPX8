@@ -3,12 +3,30 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { acoesAR } from './arStore';
-import { EQUIPAMENTOS_AR } from './content';
+import { CATALOGOS_AR, CatalogoAR, CIRCUITOS_AR, EQUIPAMENTOS_AR } from './content';
 import { LabRecognitionScene } from './scene/LabRecognitionScene';
 import { ARHud } from './ui/ARHud';
 
-/** Camera de RA (ViroReact) + interface 2D por cima. So funciona em development build, nao no Expo Go. */
-export function ARView() {
+// O navigator recebe o componente da cena (nao um elemento): um por catalogo, definidos fora do render.
+function CenaEquipamentos() {
+  return <LabRecognitionScene itens={EQUIPAMENTOS_AR} />;
+}
+
+function CenaCircuitos() {
+  return <LabRecognitionScene itens={CIRCUITOS_AR} />;
+}
+
+const TELAS: Record<CatalogoAR, { cena: () => React.JSX.Element; dica: string }> = {
+  equipamentos: { cena: CenaEquipamentos, dica: 'Aponte a câmera para um equipamento, de perto.' },
+  circuitos: { cena: CenaCircuitos, dica: 'Aproxime o celular do ESP32, de cima, até a placa ocupar metade da tela.' },
+};
+
+/**
+ * Camera de RA (ViroReact) + interface 2D por cima. A mesma tela serve para
+ * Equipamentos e Circuitos; muda so o catalogo do que e reconhecido.
+ * So funciona em development build, nao no Expo Go.
+ */
+export function ARView({ catalogo }: { catalogo: CatalogoAR }) {
   useEffect(() => {
     acoesAR.reiniciar();
     return () => acoesAR.reiniciar();
@@ -19,11 +37,11 @@ export function ARView() {
       <ViroARSceneNavigator
         autofocus
         // Um alvo por face/equipamento: com 1, o ARCore nao reconhece a parte de tras enquanto ainda guarda a frente.
-        numberOfTrackedImages={EQUIPAMENTOS_AR.length}
-        initialScene={{ scene: LabRecognitionScene }}
+        numberOfTrackedImages={CATALOGOS_AR[catalogo].length}
+        initialScene={{ scene: TELAS[catalogo].cena }}
         style={styles.container}
       />
-      <ARHud />
+      <ARHud dica={TELAS[catalogo].dica} />
     </View>
   );
 }

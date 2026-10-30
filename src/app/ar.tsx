@@ -1,5 +1,5 @@
 import { ARView } from '@/features/lab-ar/ARView';
 
 export default function ARScreen() {
-  return <ARView />;
+  return <ARView catalogo="equipamentos" />;
 }

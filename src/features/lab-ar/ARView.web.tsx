@@ -4,8 +4,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 
+import type { CatalogoAR } from './content';
+
 /** O ViroReact nao roda no navegador: no web mostramos so um aviso. */
-export function ARView() {
+export function ARView(_props: { catalogo: CatalogoAR }) {
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="smallBold">Realidade aumentada indisponível no navegador</ThemedText>

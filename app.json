@@ -45,24 +45,12 @@
         }
       ],
       [
-        "expo-camera",
-        {
-          "cameraPermission": "O app usa a câmera para identificar componentes de circuitos e equipamentos de laboratório."
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "O app acessa suas fotos para permitir testar a identificação com uma imagem já salva."
-        }
-      ],
-      [
         "@reactvision/react-viro",
         {
           "android": {
             "xRMode": "AR"
           },
-          "cameraUsagePermission": "O app usa a câmera para reconhecer equipamentos do laboratório e mostrar explicações em realidade aumentada."
+          "cameraUsagePermission": "O app usa a câmera para reconhecer equipamentos e circuitos do laboratório e mostrar explicações em realidade aumentada."
         }
       ]
     ],

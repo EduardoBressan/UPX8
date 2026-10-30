@@ -19,14 +19,15 @@ src/features/lab-ar/
 ├── content/            ← CONTEÚDO DIDÁTICO (é aqui que a equipe mais mexe)
 │   ├── multimetro-ft266.ts  frente e parte de trás: partes, guias, cuidados, alvos, modelo 3D
 │   ├── protoboard.ts
-│   └── index.ts        catálogo: lista de tudo que o app reconhece
+│   ├── circuito-esp32-led.ts  circuito ESP32 + LED (tela de Circuitos)
+│   └── index.ts        catálogos: Equipamentos e Circuitos
 ├── scene/
 │   ├── LabRecognitionScene.tsx   cena Viro: registra os alvos e ancora os pinos
 │   └── HotspotMarker3D.tsx       pino + linha + etiqueta 3D (billboard)
 ├── ui/ARHud.tsx        interface 2D por cima da câmera (status, painéis, guia)
 ├── arStore.ts          estado compartilhado entre a cena 3D e a interface 2D
 ├── geometry.ts         converte (u, v) da imagem → posição 3D em metros
-├── ARView.tsx          ViroARSceneNavigator + HUD
+├── ARView.tsx          ViroARSceneNavigator + HUD (recebe o catálogo da tela)
 └── ARView.web.tsx      aviso no navegador (Viro não roda na web)
 
 assets/markers/         imagens de referência (alvos)
@@ -56,7 +57,7 @@ e abra o app instalado (ele se conecta ao Metro como o Expo Go fazia). Só é pr
 Os alvos do multímetro FT-266 (`assets/markers/ft266-frente.jpg` e `ft266-traseira.jpg`) são recortes das fotos reais, e `assets/markers/protoboard-demo.png` é um desenho de demonstração. Para testar sem o equipamento:
 
 1. abra uma delas na tela do computador (ou imprima: multímetro com **6,5 cm** de largura, protoboard com **16,5 cm**);
-2. no app, toque em **Abrir câmera** e aponte para a imagem;
+2. no app, toque em **Equipamentos** e aponte para a imagem;
 3. os pinos numerados aparecem sobre o seletor, o display, os bornes etc.
 
 > No multímetro real, deixe o **seletor em OFF** ao apontar a câmera: a posição da chave faz parte da imagem reconhecida.
@@ -110,7 +111,7 @@ A cena registra o alvo novo sozinha. Não é preciso mexer em `scene/` nem em `u
 
 ## Limitações conhecidas
 
-- Só reconhece o que estiver cadastrado em `content/` (escolha do projeto: reconhecimento por imagem, sem IA na nuvem).
+- Só reconhece o que estiver cadastrado em `content/` (escolha do projeto: reconhecimento por imagem, funciona sem internet).
 - Quando a imagem sai do enquadramento, o ARCore mantém os pinos na última posição conhecida e o app avisa "fora de vista".
 - As posições dos pinos dependem de `larguraFisicaMetros` estar correta.
 - Não foi testado em iOS (o projeto está configurado para Android/ARCore).
