@@ -8,11 +8,11 @@ import { EquipamentoAR } from '../types';
  * Caminho da corrente: D2 -> fio preto -> resistor 1 kΩ -> LED -> fio roxo
  * -> barramento − -> fio laranja -> GND do ESP32.
  *
- * O alvo assets/markers/circuito-esp32-led.jpg e o recorte endireitado da foto
- * docs/fotos/circuito-esp32-led-referencia.jpg, gerado por
- * scripts/gerar-alvo-circuito-esp32.py, que tambem calcula as posicoes (u, v)
- * das partes e a transformacao do modelo 3D (o .glb esta em escala real).
- * O ESP32 e a parte com mais detalhes: e por ele que o circuito e reconhecido.
+ * O alvo (assets/markers/circuito-esp32-led.jpg) e a placa do ESP32, recortada
+ * e endireitada da foto docs/fotos/circuito-esp32-led-referencia.jpg por
+ * scripts/gerar-alvo-circuito-esp32.py. O script tambem calcula as posicoes
+ * (u, v) das partes e a transformacao do modelo 3D (o .glb esta em escala real).
+ * As partes fora do ESP32 ficam fora do alvo, com u ou v fora de 0..1.
  */
 
 export const circuitoEsp32Led: EquipamentoAR = {
@@ -22,15 +22,15 @@ export const circuitoEsp32Led: EquipamentoAR = {
   avisoModelo: 'Conteúdo feito para esta montagem. Se os fios estiverem em outros furos, o 3D não vai coincidir com a placa real.',
   alvo: {
     imagem: require('@/assets/markers/circuito-esp32-led.jpg'),
-    // Largura real do recorte (largura da protoboard sem as bordas).
-    larguraFisicaMetros: 0.052,
+    // Largura real do recorte (placa do ESP32 com ~1 mm de margem para dentro).
+    larguraFisicaMetros: 0.0262,
   },
-  // A face de cima da protoboard coincide com o centro do alvo (valores impressos pelo script).
+  // A face de cima da placa do ESP32 coincide com o centro do alvo (valores impressos pelo script).
   modelo3D: {
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- modelo 3D e um asset do Metro
     fonte: require('@/assets/models/circuito-esp32-led.glb'),
     tipo: 'GLB',
-    posicao: [0, -0.0085, 0.0275],
+    posicao: [-0.001, -0.0126, 0.0599],
     rotacao: [0, 0, 0],
     escala: [1, 1, 1],
     alturaSuperficie: 0,
@@ -41,9 +41,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 1,
       nome: 'ESP32 DevKit',
       rotuloCurto: 'ESP32',
-      posicao: { u: 0.5, v: 0.329 },
+      posicao: { u: 0.462, v: 0.785 },
       alturaEtiqueta: 0.035,
-      alturaExtra: 0.0073,
+      alturaExtra: 0.0032,
       oQueE:
         'Placa com o microcontrolador ESP32 (módulo prateado ESP-WROOM-32), que tem Wi-Fi e Bluetooth. É o "cérebro" do circuito: o programa gravado nele decide quando o LED acende.',
       comoUsar:
@@ -59,9 +59,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 2,
       nome: 'Pino D2 (GPIO 2) e fio preto',
       rotuloCurto: 'D2',
-      posicao: { u: 0.231, v: 0.14 },
+      posicao: { u: -0.073, v: 0.375 },
       alturaEtiqueta: 0.045,
-      alturaExtra: 0.0146,
+      alturaExtra: 0.0105,
       oQueE:
         'Pino de saída digital que liga e desliga o LED. O fio preto leva o sinal do D2 até a fileira do resistor.',
       comoUsar:
@@ -76,9 +76,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 3,
       nome: 'Fio laranja (GND do ESP32)',
       rotuloCurto: 'GND',
-      posicao: { u: 0.075, v: 0.093 },
+      posicao: { u: -0.382, v: 0.272 },
       alturaEtiqueta: 0.03,
-      alturaExtra: 0.0146,
+      alturaExtra: 0.0105,
       oQueE: 'Liga o pino GND (terra) do ESP32 ao barramento − (azul) da protoboard.',
       comoUsar:
         'É por este fio que a corrente volta ao ESP32 depois de passar pelo LED. Sem ele o circuito fica aberto e o LED não acende.',
@@ -89,9 +89,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 4,
       nome: 'Resistor de 1 kΩ',
       rotuloCurto: 'Resistor 1 kΩ',
-      posicao: { u: 0.5, v: 0.817 },
+      posicao: { u: 0.462, v: 1.844 },
       alturaEtiqueta: 0.03,
-      alturaExtra: 0.0069,
+      alturaExtra: 0.0028,
       oQueE:
         'Limita a corrente que passa pelo LED. Cores: marrom (1), preto (0), vermelho (×100) e dourado (±5%) = 1.000 Ω = 1 kΩ.',
       comoUsar:
@@ -106,9 +106,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 5,
       nome: 'LED vermelho',
       rotuloCurto: 'LED',
-      posicao: { u: 0.892, v: 0.879 },
+      posicao: { u: 1.24, v: 1.978 },
       alturaEtiqueta: 0.025,
-      alturaExtra: 0.0174,
+      alturaExtra: 0.0133,
       oQueE: 'Diodo emissor de luz: acende quando a corrente passa do anodo (perna longa) para o catodo (perna curta).',
       comoUsar:
         'O anodo (+) fica na fileira do resistor e o catodo (−) na fileira do fio roxo, que vai para o GND.',
@@ -120,9 +120,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 6,
       nome: 'Fio roxo (catodo → GND)',
       rotuloCurto: 'Fio roxo',
-      posicao: { u: 0.075, v: 0.994 },
+      posicao: { u: -0.382, v: 2.229 },
       alturaEtiqueta: 0.03,
-      alturaExtra: 0.0146,
+      alturaExtra: 0.0105,
       oQueE: 'Liga a fileira do catodo do LED ao barramento − (GND) da protoboard, fechando o circuito.',
       comoUsar: 'Uma ponta na mesma fileira da perna curta do LED, a outra no barramento −, o mesmo do fio laranja.',
       cuidados: [
@@ -149,27 +149,6 @@ export const circuitoEsp32Led: EquipamentoAR = {
           hotspotId: null,
           instrucao: 'Resistor e LED estão EM SÉRIE: a mesma corrente passa pelos dois. Se qualquer ligação abrir, o LED apaga.',
         },
-      ],
-    },
-    {
-      id: 'programa-blink',
-      titulo: 'Programar o pisca-pisca (Blink)',
-      objetivo: 'Fazer o LED piscar a cada 1 segundo usando a Arduino IDE.',
-      passos: [
-        {
-          hotspotId: 'esp32',
-          instrucao: 'Conecte o ESP32 ao computador pelo cabo USB. Na Arduino IDE, escolha a placa "ESP32 Dev Module" e a porta.',
-        },
-        { hotspotId: 'pino-d2', instrucao: 'No setup(), escreva: pinMode(2, OUTPUT);' },
-        {
-          hotspotId: 'led',
-          instrucao: 'No loop(): digitalWrite(2, HIGH); delay(1000); digitalWrite(2, LOW); delay(1000);',
-        },
-        {
-          hotspotId: 'esp32',
-          instrucao: 'Clique em Carregar. Se a gravação travar em "Connecting...", segure o botão BOOT da placa até começar.',
-        },
-        { hotspotId: 'led', instrucao: 'O LED deve piscar: 1 segundo aceso, 1 segundo apagado.' },
       ],
     },
     {

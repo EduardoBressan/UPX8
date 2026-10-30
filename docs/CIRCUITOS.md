@@ -1,8 +1,8 @@
-# Circuitos (RA por reconhecimento de imagem)
+# Circuitos
 
-A tela **Circuitos** agora funciona igual à de **Equipamentos**: cada circuito do laboratório tem uma imagem de referência (o "alvo") e um modelo 3D pronto. Quando a câmera reconhece o circuito, o modelo 3D aparece em cima da montagem real, com os pinos numerados de cada parte e guias passo a passo. Não precisa de internet nem do backend.
+A tela **Circuitos** usa o mesmo reconhecimento de imagem da tela **Equipamentos**: cada circuito do laboratório tem uma imagem de referência (o "alvo") e um modelo 3D. Quando a câmera reconhece o circuito, o modelo aparece sobre a montagem real, com pinos numerados em cada parte e guias passo a passo. Tudo roda no celular, sem internet.
 
-O código é o mesmo da RA de equipamentos (`src/features/lab-ar/`); muda só o catálogo:
+As duas telas compartilham o código de `src/features/lab-ar/`; muda só o catálogo:
 
 | Tela | Rota | Catálogo (`content/index.ts`) |
 |---|---|---|
@@ -11,26 +11,30 @@ O código é o mesmo da RA de equipamentos (`src/features/lab-ar/`); muda só o 
 
 ## Circuito ESP32 + LED
 
-Pino D2 → fio preto → resistor 1 kΩ → LED vermelho → fio roxo → barramento − → fio laranja → GND do ESP32.
+Caminho da corrente: pino D2 → fio preto → resistor 1 kΩ → LED vermelho → fio roxo → barramento − → fio laranja → GND do ESP32.
 
-| Arquivo | O que é |
+| Arquivo | Conteúdo |
 |---|---|
-| `assets/models/circuito-esp32-led.glb` | modelo 3D (escala real, em metros) |
+| `assets/models/circuito-esp32-led.glb` | modelo 3D, em escala real (metros) |
 | `docs/fotos/circuito-esp32-led-referencia.jpg` | foto de cima da montagem |
-| `scripts/gerar-alvo-circuito-esp32.py` | endireita a foto e gera o alvo; imprime posições das partes e do modelo |
-| `assets/markers/circuito-esp32-led.jpg` | alvo (5,2 cm de largura real) |
-| `docs/fotos/circuito-esp32-led-conferencia.jpg` | furos e partes desenhados sobre a foto, para conferir |
+| `scripts/gerar-alvo-circuito-esp32.py` | endireita a foto, gera o alvo e imprime as posições das partes e do modelo |
+| `assets/markers/circuito-esp32-led.jpg` | alvo: a placa do ESP32 (2,6 cm de largura real) |
+| `docs/fotos/circuito-esp32-led-conferencia.jpg` | furos e partes desenhados sobre a foto, para conferência |
 | `src/features/lab-ar/content/circuito-esp32-led.ts` | partes, explicações e guias |
 
-Dicas de uso: aponte de cima, com o **ESP32 inteiro** na tela (é a parte com mais detalhes, por onde o circuito é reconhecido) e boa luz.
+### Por que o alvo é só o ESP32
+
+O ARCore reconhece imagens pelos detalhes. A placa do ESP32 é rígida e tem muito texto e componentes; já a grade de furos da protoboard é um padrão repetitivo, e fios e mesa mudam de uma montagem para outra. Por isso o alvo é só o ESP32, e o resto do circuito é posicionado em relação a ele.
+
+### Como usar
+
+- Aproxime o celular até o ESP32 ocupar cerca de metade da tela, de cima, com boa luz e sem reflexo no módulo prateado.
+- Mova o celular devagar até o modelo aparecer. Depois disso, pode afastar: o modelo fica preso na posição.
+- Não deixe fios passando por cima do ESP32.
 
 ## Adicionar outro circuito
 
-1. Modele o circuito em escala real (metros) e exporte `.glb` para `assets/models/`.
-2. Tire uma foto bem de cima e coloque em `docs/fotos/`.
-3. Copie `scripts/gerar-alvo-circuito-esp32.py`, ajuste os pontos de calibração (`CALIBRACAO`), o recorte e as `PARTES`, e rode o script.
+1. Modele o circuito em escala real (metros) e exporte o `.glb` para `assets/models/`.
+2. Tire uma foto bem de cima e salve em `docs/fotos/`.
+3. Copie `scripts/gerar-alvo-circuito-esp32.py`, ajuste os pontos de calibração (`CALIBRACAO`), o recorte (`X0`, `X1`, `Z0`, `Z1`) e as `PARTES`, e rode o script.
 4. Crie o arquivo de conteúdo seguindo `circuito-esp32-led.ts`, com os valores impressos pelo script, e inclua em `CIRCUITOS_AR`.
-
----
-
-A primeira versão (a IA lia a foto e o app montava uma protoboard virtual) foi removida do código.

@@ -11,9 +11,11 @@ protoboard (furos e numeros impressos das fileiras). As medidas vem do modelo
   - a fileira r da metade A-E fica em z = (32 - r) * 2,54 mm;
   - a metade F-J e numerada ao contrario: o numero n dela fica na fileira 61 - n.
 
-O recorte pega a largura da protoboard, do ESP32 ate a fileira ~22 (onde
-estao o resistor e o LED). O ESP32 e a parte com mais detalhes: e ela que
-o ARCore usa para reconhecer o circuito.
+O recorte pega SO a placa do ESP32: e a parte rigida e cheia de detalhes
+(texto, componentes, modulo prateado). A grade de furos da protoboard e um
+padrao repetitivo que o ARCore quase nao consegue usar, e fios e a mesa mudam
+de uma montagem para outra, entao ficam de fora. O resistor, o LED e os fios
+sao posicionados em relacao ao ESP32 (u, v fora de 0..1).
 
 Saidas:
   assets/markers/circuito-esp32-led.jpg            alvo
@@ -39,12 +41,14 @@ PASSO = 0.00254
 X_COLUNA_A = -0.01397
 X_COLUNA_J = 0.01397
 DIST_NUMERO = 0.0021  # numeros impressos ficam ~2 mm para fora das colunas A e J
-SUPERFICIE_Y = 0.0085  # face de cima da protoboard
-PIXELS_POR_METRO = 10000
+SUPERFICIE_Y = 0.0126  # face de cima da placa do ESP32 (o alvo fica nesse plano)
+# A foto tem ~10,5 px/mm na placa; um pouco acima disso para o alvo passar dos 300 px de largura pedidos pelo ARCore.
+PIXELS_POR_METRO = 12000
 
-# Regiao do alvo no modelo: largura da protoboard (sem a borda) e do ESP32 ate a fileira ~22.
-X0, X1 = -0.026, 0.026
-Z0, Z1 = -0.081, 0.026
+# Regiao do alvo no modelo: a placa do ESP32 REAL (cantos na foto: (400, 365), (670, 350), (710, 848),
+# (428, 858), que dao x -0.0135..0.0151 e z -0.086..-0.0337), com ~1 mm de margem para dentro.
+X0, X1 = -0.0121, 0.0141
+Z0, Z1 = -0.0845, -0.0352
 
 
 def z_fileira(r):
@@ -127,7 +131,7 @@ def main():
         desenho.text((px + 12, py - 8), parte, fill=(0, 200, 255))
     conferencia.save(CONFERENCIA, quality=85)
 
-    # O centro do alvo fica na face de cima da protoboard: o modelo e deslocado para esse ponto ir a origem.
+    # O centro do alvo fica na face de cima da placa do ESP32: o modelo e deslocado para esse ponto ir a origem.
     zc = (Z0 + Z1) / 2
     print(f"alvo {largura}x{altura} px, largura fisica = {X1 - X0:.4f} m")
     print(f"modelo3D: posicao [{-(X0 + X1) / 2:.4f}, {-SUPERFICIE_Y:.4f}, {-zc:.4f}], rotacao [0, 0, 0]")

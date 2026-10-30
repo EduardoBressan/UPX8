@@ -50,7 +50,7 @@
           "android": {
             "xRMode": "AR"
           },
-          "cameraUsagePermission": "O app usa a câmera para reconhecer equipamentos do laboratório e mostrar explicações em realidade aumentada."
+          "cameraUsagePermission": "O app usa a câmera para reconhecer equipamentos e circuitos do laboratório e mostrar explicações em realidade aumentada."
         }
       ]
     ],

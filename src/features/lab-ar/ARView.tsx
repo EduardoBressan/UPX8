@@ -18,7 +18,7 @@ function CenaCircuitos() {
 
 const TELAS: Record<CatalogoAR, { cena: () => React.JSX.Element; dica: string }> = {
   equipamentos: { cena: CenaEquipamentos, dica: 'Aponte a câmera para um equipamento, de perto.' },
-  circuitos: { cena: CenaCircuitos, dica: 'Aponte a câmera para o circuito, de cima, com o ESP32 inteiro na tela.' },
+  circuitos: { cena: CenaCircuitos, dica: 'Aproxime o celular do ESP32, de cima, até a placa ocupar metade da tela.' },
 };
 
 /**
