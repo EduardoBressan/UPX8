@@ -17,8 +17,14 @@ padrao repetitivo que o ARCore quase nao consegue usar, e fios e a mesa mudam
 de uma montagem para outra, entao ficam de fora. O resistor, o LED e os fios
 sao posicionados em relacao ao ESP32 (u, v fora de 0..1).
 
+Alvos extras: o mesmo recorte do ESP32 tirado de outras fotos (outra luz,
+outro fundo), para o app reconhecer o circuito em mais situacoes. Cada foto
+extra e alinhada pelos 4 furos de fixacao do ESP32, cuja posicao no modelo vem
+da foto principal; assim todos os alvos tem o mesmo enquadramento e tamanho.
+
 Saidas:
-  assets/markers/circuito-esp32-led.jpg            alvo
+  assets/markers/circuito-esp32-led.jpg            alvo principal (mesa clara)
+  assets/markers/circuito-esp32-led-<n>.jpg        alvos extras
   docs/fotos/circuito-esp32-led-conferencia.jpg    furos e partes desenhados sobre a foto
 
 Tambem imprime a transformacao do modelo 3D e a posicao (u, v) de cada parte,
@@ -33,7 +39,8 @@ from PIL import Image, ImageDraw
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FOTO = os.path.join(RAIZ, "docs", "fotos", "circuito-esp32-led-referencia.jpg")
-ALVO = os.path.join(RAIZ, "assets", "markers", "circuito-esp32-led.jpg")
+MARCADORES = os.path.join(RAIZ, "assets", "markers")
+ALVO = os.path.join(MARCADORES, "circuito-esp32-led.jpg")
 CONFERENCIA = os.path.join(RAIZ, "docs", "fotos", "circuito-esp32-led-conferencia.jpg")
 
 # --- Medidas do modelo 3D (metros, sistema do .glb: X direita, Y para cima, Z para o lado do LED) ---
@@ -76,6 +83,16 @@ CALIBRACAO = [
     ((751, 1560), (X_COLUNA_J, z_fileira(20))),
 ]
 
+# Furos de fixacao do ESP32 na foto principal, na ordem: lado do USB e do 3V3, lado do USB e do VIN,
+# ponta oposta e lado do D23, ponta oposta e lado do EN.
+FUROS_FOTO_PRINCIPAL = [(419.3, 391.7), (648.3, 365.0), (441.7, 841.7), (685.0, 815.0)]
+
+# Fotos extras (em docs/fotos/) e os mesmos 4 furos, na mesma ordem.
+FOTOS_EXTRAS = [
+    ("circuito-esp32-led-mesa-escura-1.jpg", [(191.7, 595.0), (203.3, 303.3), (780.0, 595.0), (780.0, 310.0)]),
+    ("circuito-esp32-led-mesa-escura-2.jpg", [(341.7, 266.7), (556.7, 276.7), (343.3, 710.0), (553.3, 706.7)]),
+]
+
 # Partes apontadas no app: (x, z, topo y) no modelo, medidos nos vertices do .glb.
 PARTES = {
     "esp32": (0.0, -0.0458, 0.0158),
@@ -102,19 +119,33 @@ def para_foto(h, x, z):
     return p[0] / p[2], p[1] / p[2]
 
 
+def recortar(foto, h):
+    """Recorta da foto a regiao X0..X1, Z0..Z1 do modelo, dada a homografia modelo -> foto."""
+    largura = round((X1 - X0) * PIXELS_POR_METRO)
+    altura = round((Z1 - Z0) * PIXELS_POR_METRO)
+    # Pixel do alvo -> metros do modelo -> pixel da foto.
+    m = h @ np.array([[1 / PIXELS_POR_METRO, 0, X0], [0, 1 / PIXELS_POR_METRO, Z0], [0, 0, 1]])
+    m = m / m[2, 2]
+    return foto.transform((largura, altura), Image.PERSPECTIVE, tuple(m.flatten()[:8]), resample=Image.BICUBIC)
+
+
 def main():
     h = homografia(CALIBRACAO)
     erros = [np.hypot(*np.subtract(para_foto(h, x, z), uv)) for uv, (x, z) in CALIBRACAO]
     print(f"calibracao: erro medio {np.mean(erros):.1f} px, maximo {np.max(erros):.1f} px")
 
     foto = Image.open(FOTO).convert("RGB")
-    largura = round((X1 - X0) * PIXELS_POR_METRO)
-    altura = round((Z1 - Z0) * PIXELS_POR_METRO)
-    # Pixel do alvo -> metros do modelo -> pixel da foto.
-    m = h @ np.array([[1 / PIXELS_POR_METRO, 0, X0], [0, 1 / PIXELS_POR_METRO, Z0], [0, 0, 1]])
-    m = m / m[2, 2]
-    alvo = foto.transform((largura, altura), Image.PERSPECTIVE, tuple(m.flatten()[:8]), resample=Image.BICUBIC)
+    alvo = recortar(foto, h)
     alvo.save(ALVO, quality=93)
+    largura, altura = alvo.size
+
+    # Furos do ESP32 no modelo, a partir da foto principal; cada foto extra e alinhada por eles.
+    h_inversa = np.linalg.inv(h)
+    furos_modelo = [para_foto(h_inversa, u, v) for u, v in FUROS_FOTO_PRINCIPAL]
+    for indice, (arquivo, furos) in enumerate(FOTOS_EXTRAS, start=2):
+        h_extra = homografia(list(zip(furos, furos_modelo)))
+        extra = Image.open(os.path.join(RAIZ, "docs", "fotos", arquivo)).convert("RGB")
+        recortar(extra, h_extra).save(os.path.join(MARCADORES, f"circuito-esp32-led-{indice}.jpg"), quality=93)
 
     conferencia = foto.copy()
     desenho = ImageDraw.Draw(conferencia)

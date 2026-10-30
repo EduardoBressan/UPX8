@@ -14,6 +14,8 @@ export interface EstadoAR {
   rastreamento: Rastreamento;
   /** Equipamento cujo alvo esta reconhecido agora (ou o ultimo reconhecido). */
   equipamentoId: string | null;
+  /** Qual dos alvos do equipamento ancora o conteudo (um equipamento pode ter mais de uma imagem). */
+  alvo: string | null;
   /** false quando o ARCore perdeu a imagem de vista e so mantem a ultima posicao conhecida. */
   equipamentoVisivel: boolean;
   hotspotId: string | null;
@@ -25,6 +27,7 @@ export interface EstadoAR {
 const ESTADO_INICIAL: EstadoAR = {
   rastreamento: 'iniciando',
   equipamentoId: null,
+  alvo: null,
   equipamentoVisivel: false,
   hotspotId: null,
   procedimento: null,
@@ -69,25 +72,34 @@ export const acoesAR = {
   definirRastreamento(rastreamento: Rastreamento) {
     if (rastreamento !== estado.rastreamento) atualizar({ rastreamento });
   },
-  equipamentoReconhecido(equipamentoId: string) {
-    cancelarForaDeVista();
+  equipamentoReconhecido(equipamentoId: string, alvo: string) {
     if (equipamentoId === estado.equipamentoId) {
+      if (alvo !== estado.alvo) {
+        // Outra imagem do mesmo equipamento: so assume quando a atual saiu de vista, para o conteudo nao
+        // ficar pulando entre as duas. A parte selecionada e o guia em andamento continuam.
+        if (estado.equipamentoVisivel) return;
+        cancelarForaDeVista();
+        atualizar({ alvo, equipamentoVisivel: true });
+        return;
+      }
+      cancelarForaDeVista();
       if (!estado.equipamentoVisivel) atualizar({ equipamentoVisivel: true });
       return;
     }
-    atualizar({ equipamentoId, equipamentoVisivel: true, hotspotId: null, procedimento: null });
+    cancelarForaDeVista();
+    atualizar({ equipamentoId, alvo, equipamentoVisivel: true, hotspotId: null, procedimento: null });
   },
-  equipamentoForaDeVista(equipamentoId: string) {
-    if (equipamentoId !== estado.equipamentoId || !estado.equipamentoVisivel || temporizadorForaDeVista) return;
+  equipamentoForaDeVista(alvo: string) {
+    if (alvo !== estado.alvo || !estado.equipamentoVisivel || temporizadorForaDeVista) return;
     temporizadorForaDeVista = setTimeout(() => {
       temporizadorForaDeVista = null;
-      if (equipamentoId === estado.equipamentoId) atualizar({ equipamentoVisivel: false });
+      if (alvo === estado.alvo) atualizar({ equipamentoVisivel: false });
     }, TOLERANCIA_FORA_DE_VISTA_MS);
   },
-  equipamentoPerdido(equipamentoId: string) {
-    if (equipamentoId !== estado.equipamentoId) return;
+  equipamentoPerdido(alvo: string) {
+    if (alvo !== estado.alvo) return;
     cancelarForaDeVista();
-    atualizar({ equipamentoId: null, equipamentoVisivel: false, hotspotId: null, procedimento: null });
+    atualizar({ equipamentoId: null, alvo: null, equipamentoVisivel: false, hotspotId: null, procedimento: null });
   },
   selecionarHotspot(hotspotId: string | null) {
     // Durante um guia, tocar numa parte nao interrompe o passo a passo.

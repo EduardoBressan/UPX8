@@ -96,6 +96,11 @@ export interface EquipamentoAR {
     imagem: ImageSourcePropType;
     /** Largura REAL da imagem reconhecida, em metros (ex.: largura do painel fotografado ou do marcador impresso). */
     larguraFisicaMetros: number;
+    /**
+     * Outras fotos do MESMO recorte (mesmo enquadramento e tamanho), com outra luz ou outro fundo.
+     * Cada uma vira um alvo a mais: o equipamento e reconhecido por qualquer uma delas.
+     */
+    imagensExtras?: ImageSourcePropType[];
   };
   modelo3D?: Modelo3D;
   hotspots: Hotspot[];

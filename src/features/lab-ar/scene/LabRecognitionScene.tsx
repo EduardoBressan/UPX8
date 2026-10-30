@@ -11,7 +11,7 @@ import {
 
 import { acoesAR, EstadoAR, Rastreamento, useEstadoAR } from '../arStore';
 import { CIRCUITOS_AR, EQUIPAMENTOS_AR } from '../content';
-import { nomeDoAlvo, posicaoNoAlvo } from '../geometry';
+import { alvosDoEquipamento, posicaoNoAlvo } from '../geometry';
 import { EquipamentoAR, Hotspot } from '../types';
 
 import { AparenciaHotspot, HotspotMarker3D } from './HotspotMarker3D';
@@ -21,14 +21,16 @@ const ALTURA_ETIQUETA_PADRAO = 0.03;
 // Registro dos alvos de todos os catalogos (feito uma vez, no carregamento do modulo — mesmo padrao do WL01).
 ViroARTrackingTargets.createTargets(
   Object.fromEntries(
-    [...EQUIPAMENTOS_AR, ...CIRCUITOS_AR].map((equipamento) => [
-      nomeDoAlvo(equipamento),
-      {
-        source: equipamento.alvo.imagem,
-        orientation: 'Up',
-        physicalWidth: equipamento.alvo.larguraFisicaMetros,
-      },
-    ]),
+    [...EQUIPAMENTOS_AR, ...CIRCUITOS_AR].flatMap((equipamento) =>
+      alvosDoEquipamento(equipamento).map((alvo) => [
+        alvo.nome,
+        {
+          source: alvo.imagem,
+          orientation: 'Up',
+          physicalWidth: equipamento.alvo.larguraFisicaMetros,
+        },
+      ]),
+    ),
   ),
 );
 
@@ -91,48 +93,53 @@ export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
         // A parte em destaque (tocada ou do passo atual do guia) anima no modelo, ex.: Data Hold sendo pressionado.
         const animacao = equipamento.hotspots.find((h) => h.id === destaque)?.animacaoModelo;
 
-        return (
-          <ViroARImageMarker
-            key={equipamento.id}
-            target={nomeDoAlvo(equipamento)}
-            onAnchorFound={() => acoesAR.equipamentoReconhecido(equipamento.id)}
-            onAnchorUpdated={(ancora) => {
-              // ARCore: "tracking" = imagem na camera agora; "lastKnownPose" = saiu de vista, posicao congelada.
-              if (ancora.trackingMethod === 'tracking') acoesAR.equipamentoReconhecido(equipamento.id);
-              else acoesAR.equipamentoForaDeVista(equipamento.id);
-            }}
-            onAnchorRemoved={() => acoesAR.equipamentoPerdido(equipamento.id)}>
-            {ativo && equipamento.modelo3D && estado.mostrarModelo && (
-              <Viro3DObject
-                source={equipamento.modelo3D.fonte}
-                resources={equipamento.modelo3D.recursos}
-                type={equipamento.modelo3D.tipo}
-                position={equipamento.modelo3D.posicao}
-                rotation={equipamento.modelo3D.rotacao}
-                scale={equipamento.modelo3D.escala}
-                animation={{ name: animacao, run: animacao !== undefined, loop: true }}
-                ignoreEventHandling
-              />
-            )}
+        // Um marcador por imagem do equipamento; o conteudo fica so no alvo ativo, para nao aparecer duplicado.
+        return alvosDoEquipamento(equipamento).map((alvo) => {
+          const exibir = ativo && estado.alvo === alvo.nome;
 
-            {ativo &&
-              equipamento.hotspots.map((hotspot) => (
-                <HotspotMarker3D
-                  key={hotspot.id}
-                  posicao={posicaoNoAlvo(equipamento, hotspot.posicao, alturaDoPino(equipamento, hotspot, estado.mostrarModelo))}
-                  numero={hotspot.numero}
-                  rotulo={hotspot.rotuloCurto}
-                  alturaEtiqueta={hotspot.alturaEtiqueta ?? ALTURA_ETIQUETA_PADRAO}
-                  aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
-                  mostrarEtiqueta={estado.mostrarEtiquetas}
-                  onPress={() => {
-                    acoesAR.equipamentoReconhecido(equipamento.id);
-                    acoesAR.selecionarHotspot(hotspot.id);
-                  }}
+          return (
+            <ViroARImageMarker
+              key={alvo.nome}
+              target={alvo.nome}
+              onAnchorFound={() => acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome)}
+              onAnchorUpdated={(ancora) => {
+                // ARCore: "tracking" = imagem na camera agora; "lastKnownPose" = saiu de vista, posicao congelada.
+                if (ancora.trackingMethod === 'tracking') acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome);
+                else acoesAR.equipamentoForaDeVista(alvo.nome);
+              }}
+              onAnchorRemoved={() => acoesAR.equipamentoPerdido(alvo.nome)}>
+              {exibir && equipamento.modelo3D && estado.mostrarModelo && (
+                <Viro3DObject
+                  source={equipamento.modelo3D.fonte}
+                  resources={equipamento.modelo3D.recursos}
+                  type={equipamento.modelo3D.tipo}
+                  position={equipamento.modelo3D.posicao}
+                  rotation={equipamento.modelo3D.rotacao}
+                  scale={equipamento.modelo3D.escala}
+                  animation={{ name: animacao, run: animacao !== undefined, loop: true }}
+                  ignoreEventHandling
                 />
-              ))}
-          </ViroARImageMarker>
-        );
+              )}
+
+              {exibir &&
+                equipamento.hotspots.map((hotspot) => (
+                  <HotspotMarker3D
+                    key={hotspot.id}
+                    posicao={posicaoNoAlvo(equipamento, hotspot.posicao, alturaDoPino(equipamento, hotspot, estado.mostrarModelo))}
+                    numero={hotspot.numero}
+                    rotulo={hotspot.rotuloCurto}
+                    alturaEtiqueta={hotspot.alturaEtiqueta ?? ALTURA_ETIQUETA_PADRAO}
+                    aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
+                    mostrarEtiqueta={estado.mostrarEtiquetas}
+                    onPress={() => {
+                      acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome);
+                      acoesAR.selecionarHotspot(hotspot.id);
+                    }}
+                  />
+                ))}
+            </ViroARImageMarker>
+          );
+        });
       })}
     </ViroARScene>
   );

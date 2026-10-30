@@ -24,6 +24,8 @@ export const circuitoEsp32Led: EquipamentoAR = {
     imagem: require('@/assets/markers/circuito-esp32-led.jpg'),
     // Largura real do recorte (placa do ESP32 com ~1 mm de margem para dentro).
     larguraFisicaMetros: 0.0262,
+    // O mesmo recorte em mesa escura e com pouca luz: reconhece o circuito em mais ambientes.
+    imagensExtras: [require('@/assets/markers/circuito-esp32-led-2.jpg'), require('@/assets/markers/circuito-esp32-led-3.jpg')],
   },
   // A face de cima da placa do ESP32 coincide com o centro do alvo (valores impressos pelo script).
   modelo3D: {

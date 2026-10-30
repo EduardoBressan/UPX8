@@ -16,15 +16,19 @@ Caminho da corrente: pino D2 → fio preto → resistor 1 kΩ → LED vermelho �
 | Arquivo | Conteúdo |
 |---|---|
 | `assets/models/circuito-esp32-led.glb` | modelo 3D, em escala real (metros) |
-| `docs/fotos/circuito-esp32-led-referencia.jpg` | foto de cima da montagem |
+| `docs/fotos/circuito-esp32-led-referencia.jpg` | foto de cima da montagem (mesa clara) |
+| `docs/fotos/circuito-esp32-led-mesa-escura-*.jpg` | fotos da mesma montagem em mesa escura, para os alvos extras |
 | `scripts/gerar-alvo-circuito-esp32.py` | endireita a foto, gera o alvo e imprime as posições das partes e do modelo |
 | `assets/markers/circuito-esp32-led.jpg` | alvo: a placa do ESP32 (2,6 cm de largura real) |
+| `assets/markers/circuito-esp32-led-2.jpg`, `-3.jpg` | o mesmo recorte em mesa escura e com pouca luz |
 | `docs/fotos/circuito-esp32-led-conferencia.jpg` | furos e partes desenhados sobre a foto, para conferência |
 | `src/features/lab-ar/content/circuito-esp32-led.ts` | partes, explicações e guias |
 
 ### Por que o alvo é só o ESP32
 
 O ARCore reconhece imagens pelos detalhes. A placa do ESP32 é rígida e tem muito texto e componentes; já a grade de furos da protoboard é um padrão repetitivo, e fios e mesa mudam de uma montagem para outra. Por isso o alvo é só o ESP32, e o resto do circuito é posicionado em relação a ele.
+
+O mesmo recorte do ESP32 é cadastrado a partir de três fotos (mesa clara e mesa escura com pouca luz), em `alvo.imagensExtras`: o circuito é reconhecido por qualquer uma delas. O script alinha cada foto extra pelos 4 furos de fixação do ESP32, então todas têm o mesmo enquadramento e tamanho e usam as mesmas posições das partes. Para acrescentar uma foto, coloque-a em `docs/fotos/`, inclua em `FOTOS_EXTRAS` com a posição dos 4 furos e rode o script.
 
 ### Como usar
 

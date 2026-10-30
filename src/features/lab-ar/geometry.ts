@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image, ImageSourcePropType } from 'react-native';
 
 import { EquipamentoAR, PontoNaImagem, Vec3 } from './types';
 
@@ -26,4 +26,13 @@ export function dimensoesDoAlvo(equipamento: EquipamentoAR): { largura: number; 
 /** Nome do alvo registrado no ViroARTrackingTargets para um equipamento. */
 export function nomeDoAlvo(equipamento: EquipamentoAR): string {
   return `alvo_${equipamento.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+}
+
+/** Todos os alvos de um equipamento (a imagem principal e as extras), cada um com o nome registrado no Viro. */
+export function alvosDoEquipamento(equipamento: EquipamentoAR): { nome: string; imagem: ImageSourcePropType }[] {
+  const imagens = [equipamento.alvo.imagem, ...(equipamento.alvo.imagensExtras ?? [])];
+  return imagens.map((imagem, indice) => ({
+    nome: indice === 0 ? nomeDoAlvo(equipamento) : `${nomeDoAlvo(equipamento)}_${indice + 1}`,
+    imagem,
+  }));
 }

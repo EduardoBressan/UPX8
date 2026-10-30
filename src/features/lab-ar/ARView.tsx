@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { acoesAR } from './arStore';
 import { CATALOGOS_AR, CatalogoAR, CIRCUITOS_AR, EQUIPAMENTOS_AR } from './content';
+import { alvosDoEquipamento } from './geometry';
 import { LabRecognitionScene } from './scene/LabRecognitionScene';
 import { ARHud } from './ui/ARHud';
 
@@ -36,8 +37,8 @@ export function ARView({ catalogo }: { catalogo: CatalogoAR }) {
     <View style={styles.container}>
       <ViroARSceneNavigator
         autofocus
-        // Um alvo por face/equipamento: com 1, o ARCore nao reconhece a parte de tras enquanto ainda guarda a frente.
-        numberOfTrackedImages={CATALOGOS_AR[catalogo].length}
+        // Um por imagem cadastrada: com 1, o ARCore nao reconhece a parte de tras enquanto ainda guarda a frente.
+        numberOfTrackedImages={CATALOGOS_AR[catalogo].flatMap(alvosDoEquipamento).length}
         initialScene={{ scene: TELAS[catalogo].cena }}
         style={styles.container}
       />
