@@ -66,7 +66,7 @@ export default function HomeScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={[styles.marca, { borderColor: theme.border }]}>
-          <ThemedText type="smallBold">⚡ RA Lab · Laboratório de Eletrônica</ThemedText>
+          <ThemedText type="smallBold">⚡ LabLens · Laboratório de Eletrônica</ThemedText>
         </View>
 
         <View style={styles.conteudo}>

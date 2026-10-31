@@ -12,7 +12,7 @@ parte de baixo da imagem, em metros). Por isso, no conteudo, basta usar
 posicao [0, 0, 0], rotacao [0, 0, 0] e escala [1, 1, 1].
 
 Sao modelos simples, para testar o fluxo. Para o projeto final, troquem por
-modelos feitos no Blender/Sketchfab (ver docs/RA-RECONHECIMENTO.md).
+modelos feitos no Blender/Sketchfab (ver a secao 13 do README.md).
 
 Uso:  python scripts/gerar-modelos-demo.py   (sem dependencias extras)
 """
@@ -56,7 +56,7 @@ def protoboard():
         material("painel", [1, 1, 1, 1], textura=True, rugosidade=0.8),
         material("base", cor("#E8E4DA"), rugosidade=0.8),
     ]
-    salvar_glb(os.path.join(SAIDA, "protoboard-demo.glb"), [painel, base], materiais, png, gerador="RA Lab gerar-modelos-demo.py")
+    salvar_glb(os.path.join(SAIDA, "protoboard-demo.glb"), [painel, base], materiais, png, gerador="LabLens gerar-modelos-demo.py")
     return E
 
 

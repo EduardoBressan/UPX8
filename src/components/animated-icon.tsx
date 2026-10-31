@@ -37,7 +37,7 @@ export function AnimatedSplashOverlay() {
 
   const mark = (
     <View style={styles.mark}>
-      <Text style={styles.markText}>RA Lab</Text>
+      <Text style={styles.markText}>LabLens</Text>
     </View>
   );
 

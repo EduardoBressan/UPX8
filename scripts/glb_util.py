@@ -127,7 +127,7 @@ def extrusao(malha, contorno, y0, y1):
         malha.tri((cx, y0, cz), (xa, y0, za), (xb, y0, zb), (0, -1, 0))
 
 
-def salvar_glb(caminho, malhas, materiais, imagem_png=None, gerador="RA Lab"):
+def salvar_glb(caminho, malhas, materiais, imagem_png=None, gerador="LabLens"):
     binario = bytearray()
     buffer_views, acessores, primitivas = [], [], []
 
