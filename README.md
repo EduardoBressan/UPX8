@@ -1,7 +1,7 @@
 # ⚡ LabLens — Realidade Aumentada para Laboratório de Eletrônica
 
 > **Projeto da disciplina UPX8 — Realidade Aumentada.**
-> Aplicativo Android que reconhece equipamentos e circuitos de laboratório pela câmera e explica cada parte com modelos 3D sobre a peça real.
+> Aplicativo Android de Realidade Aumentada que ancora informações e guias de uso aos equipamentos e circuitos reais do laboratório de eletrônica.
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Plataforma](https://img.shields.io/badge/plataforma-Android-green)
@@ -18,9 +18,11 @@
 | **Equipe** | VantageAR |
 | **Curso** | Engenharia da Computação |
 | **Turma** | TIN2 |
+| **Instituição** | Centro Universitário Facens — Sorocaba, SP |
 | **Disciplina** | UPX8 — Realidade Aumentada |
 | **Professor** | Daniel Ohata |
 | **Semestre** | 2026.2 |
+| **Artigo científico** | Uso de realidade aumentada para a identificação e o uso de equipamentos de laboratório de eletrônica no ensino de engenharia |
 
 ### Integrantes
 
@@ -37,27 +39,31 @@
 
 ## 2. Visão Geral
 
-Em laboratórios de eletrônica, o aluno precisa entender o que cada parte de um equipamento faz e como usá-lo com segurança, mas nem sempre há um professor disponível para cada bancada, e o manual não aponta para a peça que está na mão dele.
+Estudantes iniciantes de engenharia têm dificuldade para identificar as partes dos equipamentos de laboratório e para executar procedimentos básicos, como medir com um multímetro ou montar um circuito em protoboard. Isso consome tempo de monitoria e reduz o aproveitamento das aulas práticas.
 
-O **LabLens** é um aplicativo Android para esse aluno. Ele aponta a câmera do celular para um equipamento ou para um circuito montado, e o app reconhece o que está vendo e mostra, **sobre a peça real**, um modelo 3D com pinos numerados. Ao tocar numa parte, o aluno lê o que ela é, como usar e quais cuidados tomar. Há também guias passo a passo, em que a parte usada em cada etapa acende na própria peça.
+O **LabLens** é um aplicativo móvel para Android voltado a esses estudantes. Ao apontar a câmera para um equipamento ou circuito do laboratório, o aluno vê, **ancorados à peça real**, um modelo 3D, pinos e etiquetas que indicam cada parte. Ao tocar numa parte, ele consulta o nome, a função e os cuidados. Nos guias passo a passo, cada etapa indica em 3D a parte envolvida e mostra os alertas de segurança aplicáveis.
 
-A Realidade Aumentada é o centro da solução: o ARCore reconhece imagens cadastradas e fornece a posição delas no espaço, e o ViroReact desenha o conteúdo 3D nessa posição. Tudo roda no celular, sem servidor e sem internet.
+A Realidade Aumentada é o centro da solução: o ARCore reconhece a imagem de referência e estima continuamente sua posição e orientação, e o ViroReact posiciona o conteúdo virtual sobre a peça. Tudo funciona no próprio celular, sem hardware dedicado e sem internet.
 
-![Circuito ESP32 + LED usado no projeto](docs/images/fotos/circuito-esp32-led-referencia.jpg)
+O aplicativo é também o instrumento de uma pesquisa, descrita no artigo científico da equipe, que vai medir o efeito da RA sobre o desempenho dos estudantes em comparação ao material impresso.
+
+![Circuito montado usado nos testes do protótipo](docs/images/fotos/circuito-esp32-led-referencia.jpg)
 
 ---
 
 ## 3. Problema
 
-**Contexto.** Disciplinas de eletrônica dependem de instrumentos, como o multímetro, e de montagens em protoboard. O aluno costuma ter o primeiro contato com esses itens já na bancada.
+**Contexto.** A formação em engenharia depende de atividades práticas de laboratório, nas quais o estudante precisa reconhecer equipamentos físicos e associá-los à teoria. A eletrônica é pré-requisito para disciplinas de instrumentação, controle e sistemas embarcados, então dificuldades nessa etapa tendem a se propagar pela formação.
 
-**Situação atual.** A orientação vem do professor, que atende vários grupos ao mesmo tempo, ou de manuais e apostilas, que descrevem o equipamento de forma genérica e separada da peça real.
+**Situação atual.** A orientação depende de monitores, professores e materiais impressos, separados do equipamento real. O aluno precisa alternar a atenção entre o material e a peça.
 
-**Dificuldade.** O aluno precisa relacionar o que lê com o que vê: qual é o borne certo, em que posição fica o seletor, por onde passa a corrente num circuito. Erros de montagem e de medição são comuns nessa etapa.
+**Dificuldade.** O problema não está na complexidade teórica do circuito, mas no reconhecimento dos elementos físicos e na sua correspondência com a representação simbólica. Parte do tempo de laboratório é consumida em dúvidas operacionais, e não na compreensão dos conceitos.
 
-**Público afetado.** Estudantes iniciantes em eletrônica e, indiretamente, os professores e técnicos que os acompanham.
+**Público afetado.** Estudantes iniciantes de engenharia e, indiretamente, monitores e professores que os acompanham.
 
-**Impacto.** Tempo de aula gasto com dúvidas básicas, risco de danificar componentes e instrumentos e, em medições na rede elétrica, risco à segurança do aluno.
+**Impacto.** Menor aproveitamento das aulas práticas, maior dependência de acompanhamento individual, risco de erro em procedimentos e, em medições na rede elétrica, risco à segurança. O tema se relaciona ao **ODS 4**, Educação de Qualidade, na meta de ampliar o acesso a uma formação técnica e profissional efetiva.
+
+**Lacuna.** A literatura indica efeito positivo médio da RA sobre a aprendizagem, condicionado ao modo como a informação é integrada à tarefa. Porém, as avaliações em eletrônica concentram-se na aceitação, na percepção dos estudantes ou no desempenho técnico do sistema, e são escassos os estudos que medem o desempenho dos estudantes na tarefa em comparação a recursos convencionais.
 
 ---
 
@@ -65,30 +71,36 @@ A Realidade Aumentada é o centro da solução: o ARCore reconhece imagens cadas
 
 ### 4.1 Objetivo Geral
 
-Desenvolver um aplicativo Android de Realidade Aumentada que reconheça equipamentos e circuitos de laboratório e explique cada parte diretamente sobre a peça real.
+Desenvolver e avaliar uma aplicação de realidade aumentada que ancora informações e guias de uso a equipamentos de laboratório de eletrônica, verificando seu efeito sobre o desempenho de estudantes de engenharia em comparação a material impresso.
 
-### 4.2 Objetivos Técnicos
+### 4.2 Questão de pesquisa e hipótese
 
-- Reconhecer imagens cadastradas com ARCore, por meio do ViroReact.
-- Ancorar modelos 3D (`.glb`) em escala real sobre a peça reconhecida.
-- Exibir pinos numerados e etiquetas 3D em cada parte.
-- Permitir a seleção de uma parte para consultar sua explicação.
-- Oferecer guias passo a passo com destaque visual da parte usada.
-- Reconhecer um circuito montado a partir de uma peça rígida (ESP32), mesmo com fios em posições diferentes.
-- Manter o conteúdo fixo na posição quando a imagem sai de vista.
-- Executar e testar a aplicação em um celular Android real.
+**RQ1 —** Qual é o efeito de uma aplicação de realidade aumentada que ancora informações aos equipamentos reais na taxa de acerto, no sucesso e no tempo de estudantes de engenharia durante a identificação de partes e a execução de procedimentos com multímetro e protoboard, em comparação ao uso de material impresso com conteúdo equivalente?
+
+**H1 —** Estudantes que utilizarem a aplicação apresentarão maior taxa de acerto na identificação das partes, maior taxa de sucesso na execução do procedimento e menor tempo de execução do que estudantes que utilizarem material impresso com conteúdo equivalente.
+
+### 4.3 Objetivos Técnicos
+
+- Reconhecer imagens de referência com ARCore e estimar continuamente sua posição e orientação.
+- Ancorar modelos 3D, pinos e etiquetas às partes reais com ViroReact.
+- Permitir a consulta do nome, da função e dos cuidados de cada parte.
+- Oferecer guias passo a passo com indicação em 3D e alertas de segurança.
+- Sinalizar ao usuário a perda de rastreamento.
+- Registrar as interações em sessões anônimas e exportá-las em CSV.
+- Verificar tecnicamente o protótipo antes da avaliação com usuários.
+- Executar o aplicativo em celulares Android, sem hardware dedicado e sem internet.
 
 ---
 
 ## 5. Público-Alvo
 
-**Perfil:** estudantes de cursos técnicos e de graduação que estão começando em eletrônica.
+**Perfil:** estudantes de engenharia em início de curso, com pouca ou nenhuma experiência em laboratório de eletrônica. O experimento previsto terá estudantes de Engenharia da Computação do Centro Universitário Facens, do primeiro ao quarto semestre.
 
-**Contexto de uso:** laboratório ou bancada, com o equipamento ou o circuito à frente e o celular na mão.
+**Contexto de uso:** atividades práticas em bancada, com o equipamento à frente e o celular na mão.
 
-**Necessidades:** identificar as partes de um instrumento, aprender a medir corretamente, entender um circuito e receber alertas de segurança no momento do uso.
+**Necessidades:** localizar as partes no equipamento real, compreender a função de cada uma, executar procedimentos corretamente e receber alertas de segurança no momento do uso.
 
-**Familiaridade tecnológica:** basta saber usar um smartphone. O aplicativo não exige cadastro nem conhecimento prévio de Realidade Aumentada.
+**Familiaridade tecnológica:** basta saber usar um smartphone. Os textos usam linguagem adequada a iniciantes, e não é necessário cadastro.
 
 **Limitações:** é necessário um celular Android compatível com ARCore.
 
@@ -96,21 +108,25 @@ Desenvolver um aplicativo Android de Realidade Aumentada que reconheça equipame
 
 ## 6. Funcionalidades
 
+Os requisitos RF01 a RF09 são os definidos no artigo científico.
+
 | ID | Funcionalidade | Descrição | Status |
 |---|---|---|---|
-| RF01 | Tela inicial | Escolha entre Equipamentos e Circuitos | ✅ |
-| RF02 | Iniciar RA | Abre a câmera de RA com o catálogo da tela escolhida | ✅ |
-| RF03 | Reconhecer multímetro | Reconhece a frente e a parte de trás do FT-266 | ✅ |
-| RF04 | Reconhecer protoboard | Reconhece a imagem de demonstração da protoboard | ✅ |
-| RF05 | Reconhecer circuito | Reconhece o circuito ESP32 + LED pela placa do ESP32, com três imagens de referência | ✅ |
-| RF06 | Exibir modelo 3D | Mostra o modelo `.glb` sobre a peça reconhecida | ✅ |
-| RF07 | Pinos e etiquetas 3D | Marca cada parte com um número e um nome | ✅ |
-| RF08 | Explicar uma parte | Mostra o que é, como usar, dicas e cuidados | ✅ |
-| RF09 | Guias passo a passo | Conduz o procedimento e destaca a parte de cada etapa | ✅ |
-| RF10 | Alertas de segurança | Classifica os avisos em informação, atenção e perigo | ✅ |
-| RF11 | Mostrar e ocultar | Alterna as etiquetas e o modelo 3D | ✅ |
-| RF12 | Manter posição | Mantém o conteúdo no lugar quando a imagem sai de vista | ✅ |
-| RF13 | Marcador impresso | Folha A4 com marcador para reconhecer o circuito de mais longe | ❌ |
+| RF01 | Reconhecer o equipamento | Reconhece a imagem de referência e estima continuamente sua posição e orientação | ✅ |
+| RF02 | Indicar as partes em 3D | Exibe pinos e etiquetas ancorados às partes, voltados para a câmera | ✅ |
+| RF03 | Consultar uma parte | Ao tocar numa etiqueta, mostra nome, função e cuidados | ✅ |
+| RF04 | Executar guia passo a passo | Apresenta passos sequenciais com indicação em 3D, e permite avançar e retornar | ✅ |
+| RF05 | Exibir alertas de segurança | Mostra os alertas dos passos com risco ao usuário ou ao equipamento | ✅ |
+| RF06 | Sinalizar perda de rastreamento | Informa quando o equipamento sai do campo de visão da câmera | ✅ |
+| RF07 | Identificar a sessão | Inicia uma sessão com código anônimo de participante | ⬜ |
+| RF08 | Registrar interações | Registra guias, partes consultadas, passos repetidos e perdas de rastreamento | ⬜ |
+| RF09 | Exportar registros | Exporta os registros de cada sessão em arquivo CSV | ⬜ |
+| RF10 | Tela inicial | Escolha entre Equipamentos e Circuitos | ✅ |
+| RF11 | Reconhecer circuitos | Reconhece um circuito montado a partir de uma peça rígida, como o microcontrolador | ✅ |
+| RF12 | Exibir modelo 3D | Mostra um modelo `.glb` em escala real sobre a peça, com opção de ocultar | ✅ |
+| RF13 | Manter posição | Mantém o conteúdo no lugar quando a imagem sai de vista | ✅ |
+| RF14 | Reconhecer novos modelos sem cadastro prévio | Ampliar o reconhecimento para outros modelos de equipamento e outros circuitos | ⬜ |
+| RF15 | Marcador impresso | Folha A4 com marcador para reconhecer o circuito de mais longe | ❌ |
 
 **Legenda:** ✅ Implementado · 🚧 Em desenvolvimento · ⬜ Planejado · ❌ Cancelado
 
@@ -118,15 +134,19 @@ Desenvolver um aplicativo Android de Realidade Aumentada que reconheça equipame
 
 ## 7. Requisitos Não Funcionais
 
-| ID | Categoria | Requisito |
-|---|---|---|
-| RNF01 | Compatibilidade | Executar em Android compatível com ARCore, com o Google Play Services for AR instalado |
-| RNF02 | Conectividade | Funcionar sem internet: alvos, modelos e textos ficam dentro do aplicativo |
-| RNF03 | Usabilidade | Chegar à câmera de RA com um toque a partir da tela inicial |
-| RNF04 | Usabilidade | Informar o estado do reconhecimento e orientar o usuário na própria tela |
-| RNF05 | Desempenho | Evitar que o modelo pisque em perdas rápidas de rastreamento (tolerância de 800 ms) |
-| RNF06 | Hardware | Exigir câmera traseira e sensores de movimento |
-| RNF07 | Segurança | Não armazenar chaves ou dados pessoais; a câmera só é usada para o reconhecimento |
+Os requisitos abaixo são os definidos no artigo científico. As metas numéricas ainda serão medidas na verificação técnica (seção 22).
+
+| ID | Categoria | Requisito | Situação |
+|---|---|---|---|
+| RNF01 | Plataforma | Executar em Android compatível com ARCore; iOS fora do escopo do protótipo | ✅ |
+| RNF02 | Funcionamento offline | Conteúdo e registros no próprio dispositivo, sem depender de internet | 🚧 Conteúdo atendido; registros planejados |
+| RNF03 | Tempo de reconhecimento | Reconhecer em até 4 segundos após o enquadramento | ⬜ A medir |
+| RNF04 | Desempenho | Média de 30 quadros por segundo | ⬜ A medir |
+| RNF05 | Qualidade de rastreamento | Imagens planas, sem padrões repetitivos e com nota mínima 75 na ferramenta do ARCore | ⬜ A medir |
+| RNF06 | Estabilidade | Conteúdo ancorado durante a movimentação e operação sem interrupções | 🚧 Em verificação |
+| RNF07 | Ambiente de utilização | Funcionar sob a iluminação dos laboratórios, a distâncias de 30 cm a 1 m | 🚧 Em verificação |
+| RNF08 | Usabilidade | Etiquetas legíveis e textos adequados a iniciantes | 🚧 Em verificação |
+| RNF09 | Privacidade | Identificar o participante só por código anônimo, sem armazenar imagens da câmera | 🚧 Sem imagens armazenadas; registros planejados |
 
 ---
 
@@ -150,6 +170,8 @@ Desenvolver um aplicativo Android de Realidade Aumentada que reconheça equipame
 | Git | 2.51.2 | Controle de versão |
 | GitHub | — | Hospedagem do código e da documentação |
 
+Para o registro de interações (RF08 e RF09), o artigo prevê o uso de SQLite com `expo-sqlite`, ainda não adicionado ao projeto.
+
 ---
 
 ## 9. Hardware Utilizado
@@ -158,37 +180,39 @@ Desenvolver um aplicativo Android de Realidade Aumentada que reconheça equipame
 |---|---|---|---|
 | Smartphone | Samsung Galaxy S25 Ultra | Android, compatível com ARCore | Execução e testes |
 | Computador | Lenovo 82MG | Windows 11, Intel Core i5-11300H, 16 GB de RAM, NVIDIA GTX 1650 | Desenvolvimento |
-| Multímetro | FT-266 | Instrumento real, frente e parte de trás | Objeto reconhecido |
-| Placa de desenvolvimento | ESP32 DevKit (ESP-WROOM-32) | Placa rígida e com muitos detalhes | Referência visual do circuito |
-| Protoboard | 830 furos | 165 × 55 mm | Montagem do circuito |
-| Componentes | LED vermelho, resistor de 1 kΩ, 3 fios jumper | Circuito do pino D2 ao GND | Circuito de exemplo |
+| Multímetro | FT-266 | Exemplar usado nos testes, frente e parte de trás | Equipamento de referência |
+| Placa de desenvolvimento | ESP32 DevKit (ESP-WROOM-32) | Exemplar usado nos testes | Referência visual do circuito |
+| Protoboard | 830 furos | 165 × 55 mm | Equipamento de referência e montagem do circuito |
+| Componentes | LED vermelho, resistor de 1 kΩ, 3 fios jumper | Circuito do pino D2 ao GND | Circuito usado nos testes |
 
 ---
 
 ## 10. Arquitetura do Sistema
 
-O aplicativo não possui servidor nem banco de dados. As telas escolhem um catálogo de conteúdo, a cena de RA registra os alvos desse catálogo e um estado compartilhado mantém a cena 3D e a interface 2D sincronizadas.
+A arquitetura organiza-se em cinco camadas, conforme o artigo científico. Não há servidor nem banco de dados remoto.
+
+| Camada | Componentes | Função |
+|---|---|---|
+| Física | Equipamento real, imagem de referência e celular | A câmera e os sensores capturam o ambiente |
+| Rastreamento | ARCore | Reconhece a imagem e estima sua pose em relação ao celular |
+| Cena em RA | ViroReact, `LabRecognitionScene`, `HotspotMarker3D` | Posiciona o modelo, os pinos e as etiquetas e trata os toques |
+| Aplicação | React Native, Expo Router, `ARView`, `ARHud`, `arStore` | Controla a navegação, os painéis e o andamento dos guias |
+| Dados | Conteúdo em `content/`, assets locais e módulo de registro (planejado) | Guarda o conteúdo dos equipamentos e, no futuro, as interações em CSV |
 
 ![Arquitetura do sistema](docs/diagrams/arquitetura.svg)
 
 ### Fluxo resumido
 
 ```text
-Usuário
+Câmera e sensores (camada física)
    ↓
-Telas (Expo Router)
+ARCore reconhece a imagem e informa a pose (rastreamento)
    ↓
-ARView + ARHud
+ViroReact posiciona o conteúdo sobre a peça (cena em RA)
    ↓
-LabRecognitionScene + catálogos de conteúdo
+Toque do usuário vai para os painéis e guias (aplicação)
    ↓
-ViroReact
-   ↓
-ARCore
-   ↓
-Câmera / Sensores
-   ↓
-Peça real no laboratório
+Conteúdo correspondente é exibido (dados)
 ```
 
 ---
@@ -197,9 +221,11 @@ Peça real no laboratório
 
 ### 11.1 Técnica utilizada
 
-O projeto usa **Image Tracking**: cada objeto possui uma ou mais imagens de referência (os "alvos"), fotografadas da própria peça. O ARCore procura essas imagens na câmera e calcula a posição e a orientação delas no espaço. O multímetro é reconhecido pela foto do painel, e o circuito pela placa do ESP32.
+O projeto usa **Image Tracking** (rastreamento de imagens naturais): cada objeto possui uma ou mais imagens de referência (os "alvos"). O ARCore procura essas imagens na câmera e estima continuamente sua posição e orientação no espaço. A técnica foi adotada por dispensar o treinamento de modelos de detecção, cujo desempenho em dispositivos móveis ainda é limitado, e por manter o rastreamento mesmo quando a imagem sai temporariamente de vista.
 
-| Objeto | Imagem de referência | Largura real |
+O protótipo usa os exemplares abaixo como referência. Outros modelos e circuitos são adicionados pelo cadastro descrito na seção 13.
+
+| Referência no protótipo | Imagem de referência | Largura real |
 |---|---|---|
 | Multímetro FT-266, frente | `assets/markers/ft266-frente.jpg` | 6,5 cm |
 | Multímetro FT-266, parte de trás | `assets/markers/ft266-traseira.jpg` | 6,5 cm |
@@ -310,7 +336,7 @@ UPX8/
 | `scripts/gerar-alvo-ft266.py` | Gera os alvos do multímetro e calcula as posições das partes |
 | `scripts/gerar-alvo-circuito-esp32.py` | Gera os alvos do circuito e calcula as posições das partes |
 
-### Como cadastrar um objeto novo
+### Como adicionar um equipamento ou circuito
 
 1. Modele o objeto em escala real, em metros, e exporte o `.glb` para `assets/models/`.
 2. Tire uma foto bem de cima, com boa luz e sem reflexo, e salve em `docs/images/fotos/`.
@@ -511,17 +537,17 @@ flowchart TD
 
 ### Multímetro reconhecido
 
-<img src="docs/images/experiencia-ra-multimetro.jpg" alt="Multímetro FT-266 reconhecido com o modelo 3D e os pinos numerados" width="300">
+<img src="docs/images/experiencia-ra-multimetro.jpg" alt="Multímetro reconhecido com o modelo 3D e os pinos numerados" width="300">
 
-- **Finalidade:** explicar o multímetro sobre a peça real.
+- **Finalidade:** explicar o equipamento sobre a peça real.
 - **Elementos:** indicador verde de reconhecimento, botões **Etiquetas** e **Modelo 3D**, modelo 3D com pinos numerados e painel com as partes e os guias de uso.
 - **Ação do usuário:** tocar num número ou abrir um guia.
 
 ### Circuito reconhecido
 
-<img src="docs/images/experiencia-ra-circuito.jpg" alt="Circuito ESP32 + LED com o modelo 3D e os pinos numerados" width="300">
+<img src="docs/images/experiencia-ra-circuito.jpg" alt="Circuito montado com o modelo 3D e os pinos numerados" width="300">
 
-- **Finalidade:** explicar o circuito ESP32 + LED.
+- **Finalidade:** explicar o circuito montado.
 - **Elementos:** modelo 3D do circuito, pinos numerados e painel com as partes e os guias. O indicador amarelo mostra que o conteúdo está na última posição conhecida, porque o celular se afastou do ESP32.
 - **Ação do usuário:** tocar num número ou abrir um guia, como **Seguir o caminho da corrente**.
 
@@ -529,17 +555,37 @@ flowchart TD
 
 ## 22. Testes Técnicos
 
+### 22.1 Testes realizados
+
 | Teste | Procedimento | Resultado esperado | Resultado obtido | Status |
 |---|---|---|---|---|
 | Tipos | `npx tsc --noEmit` | Nenhum erro | Nenhum erro | ✅ |
 | Lint | `npx expo lint` | Nenhum erro | Nenhum erro | ✅ |
 | Instalação limpa | Clonar o repositório, rodar `npm ci` e `npx expo start` e verificar os tipos | Dependências instalam e o código compila | Instalou e compilou | ✅ |
 | Scripts dos alvos | Rodar os scripts de `scripts/` | Geram imagens idênticas às do projeto | Imagens idênticas | ✅ |
-| Multímetro | Apontar a câmera para o FT-266 | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu | ✅ |
+| Multímetro | Apontar a câmera para o painel do multímetro | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu | ✅ |
 | Guia passo a passo | Abrir **Medir tensão contínua (DC)** com o multímetro reconhecido | Avançar os passos com a parte em destaque | Passos e destaques funcionaram | ✅ |
 | Circuito: alvo com a protoboard | Usar um alvo com protoboard, fios e mesa | Reconhecer e exibir o modelo 3D | Exibiu uma vez e não repetiu | ❌ |
 | Circuito: alvo só com o ESP32 | Aproximar o celular do ESP32 | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu, mas exige aproximação | ✅ |
 | Manter posição | Afastar o celular depois do reconhecimento | Conteúdo continua no lugar | Conteúdo mantido, com aviso na tela | ✅ |
+
+### 22.2 Verificação técnica planejada
+
+Antes do experimento, o artigo científico prevê:
+
+| Teste | Procedimento | Requisitos | Status |
+|---|---|---|---|
+| Funcionais | Roteiro de casos de teste para cada requisito funcional | RF01 a RF09 | 🚧 |
+| Reconhecimento | 9 tentativas por equipamento, a 30, 60 e 100 cm, com ângulos de 0°, 30° e 45°, na iluminação dos laboratórios | RNF03, RNF07 | ⬜ |
+| Posicionamento e estabilidade | Conferir pinos e etiquetas durante a movimentação e após perder e recuperar o rastreamento | RF02, RF06, RNF06 | 🚧 |
+| Desempenho | Medir a taxa de quadros durante o uso | RNF04 | ⬜ |
+| Compatibilidade | Executar nos dispositivos do experimento | RNF01 | 🚧 |
+| Registro | Comparar os registros exportados com eventos de um roteiro controlado | RF08, RF09 | ⬜ |
+| Teste-piloto | Aplicar o procedimento completo com 3 voluntários fora da amostra | — | ⬜ |
+
+### 22.3 Experimento com usuários
+
+O experimento ainda não foi realizado. Está previsto um delineamento entre grupos: o grupo experimental usa o aplicativo, e o grupo de controle usa material impresso com o mesmo conteúdo. As tarefas são identificar 3 partes e executar um procedimento com multímetro e protoboard. Serão medidos a taxa de acerto, o sucesso no procedimento e o tempo de cada tarefa, com a pontuação SUS e entrevistas como dados complementares.
 
 ---
 
@@ -553,17 +599,17 @@ flowchart TD
 
 ## 24. Limitações Conhecidas
 
-- O circuito só é reconhecido de perto, porque a placa do ESP32 tem 2,6 cm de largura na imagem de referência.
-- O conteúdo do circuito vale para esta montagem: se os fios estiverem em outros furos, o 3D não coincide com a placa real.
-- No modelo do circuito, o resistor e o LED ficam cerca de 4 mm deslocados em relação à montagem real, e o ESP32 é um pouco menor que a placa real.
-- Fios sobre o ESP32, pouca luz e reflexo no módulo prateado dificultam o reconhecimento.
-- As imagens de referência do circuito vêm de fotos de resolução limitada.
+- O reconhecimento depende de referências visuais cadastradas: outros modelos de equipamento e outros circuitos precisam ser cadastrados. Ampliar esse reconhecimento é uma evolução planejada (RF14).
+- O registro de interações, a sessão anônima e a exportação em CSV (RF07 a RF09) ainda não foram implementados.
+- As metas de 4 segundos, 30 quadros por segundo e nota 75 nas imagens ainda não foram medidas.
+- Referências pequenas exigem aproximação: a placa usada no circuito tem 2,6 cm de largura na imagem de referência, e o reconhecimento dela ocorre abaixo da faixa de 30 cm a 1 m prevista em RNF07.
 - Protoboards reais são difíceis de reconhecer, porque a grade de furos é um padrão repetitivo.
+- O conteúdo do circuito acompanha a montagem cadastrada: com fios em outros furos, o 3D não coincide com a placa real.
+- No modelo do circuito, algumas peças ficam cerca de 4 mm deslocadas em relação à montagem real.
+- Fios sobre a peça de referência, pouca luz e reflexos dificultam o reconhecimento.
 - No multímetro, o seletor faz parte da imagem reconhecida e deve estar em OFF.
-- Só é reconhecido o que está cadastrado em `src/features/lab-ar/content/`.
-- A posição do conteúdo depende de a largura física do alvo estar correta.
 - Depois que a imagem sai de vista, o conteúdo fica na última posição conhecida: se a peça for movida, ele não acompanha.
-- O projeto está configurado e testado apenas no Android, e não funciona no Expo Go nem no navegador.
+- O projeto foi testado apenas no Android, não funciona no Expo Go, e iOS está fora do escopo do protótipo.
 
 ---
 
@@ -578,7 +624,7 @@ flowchart TD
 
 - **Experiência de RA:** o multímetro e o circuito reconhecidos, com o modelo 3D na tela.
 
-| Multímetro FT-266 | Circuito ESP32 + LED |
+| Multímetro | Circuito montado |
 |---|---|
 | <img src="docs/images/experiencia-ra-multimetro.jpg" alt="Multímetro reconhecido" width="260"> | <img src="docs/images/experiencia-ra-circuito.jpg" alt="Circuito reconhecido" width="260"> |
 
@@ -598,17 +644,19 @@ flowchart TD
 
 ## 27. Cronograma Técnico
 
+As etapas seguem a metodologia do artigo científico.
+
 | Atividade | Responsável | Status |
 |---|---|---|
-| Configuração do projeto Expo | Equipe | ✅ |
-| Reconhecimento de imagem com ViroReact | Equipe | ✅ |
-| Modelo 3D e alvos do multímetro | Equipe | ✅ |
-| Interface, pinos e guias | Equipe | ✅ |
-| Modelo 3D do circuito ESP32 + LED | Equipe | ✅ |
-| Reconhecimento do circuito | Equipe | ✅ |
-| Melhoria da distância de reconhecimento | Equipe | 🚧 |
-| Testes em dispositivo | Equipe | 🚧 |
-| Documentação | Equipe | 🚧 |
+| Revisão bibliográfica | Felipe Rondello A. Lopes | ✅ |
+| Definição do problema e levantamento de requisitos | Eduardo Bressan Paixão | ✅ |
+| Projeto da solução e interface | João Guilherme Borges Feliciano | ✅ |
+| Prototipação e desenvolvimento mobile | Luiza Santos Mascarenhas Bottesi, Eduardo Bressan Paixão | 🚧 |
+| Registro de interações e exportação em CSV | Equipe | ⬜ |
+| Verificação técnica | William Rocchi Dias | 🚧 |
+| Experimento com usuários | William Rocchi Dias | ⬜ |
+| Coleta e análise dos dados | João Guilherme Borges Feliciano | ⬜ |
+| Documentação | Felipe Rondello A. Lopes | 🚧 |
 
 ---
 
@@ -677,11 +725,11 @@ test: registra teste em dispositivo Android
 
 ## 30. Melhorias Futuras
 
-- Refazer as imagens de referência com fotos de maior resolução.
-- Aumentar a distância de reconhecimento do circuito.
+- Ampliar o reconhecimento para outros modelos de equipamento e outros circuitos (RF14).
+- Implementar a sessão anônima, o registro de interações e a exportação em CSV (RF07 a RF09).
+- Avaliar as imagens de referência com a ferramenta do ARCore e refazê-las com fotos de maior resolução.
+- Aumentar a distância de reconhecimento para atender à faixa de 30 cm a 1 m.
 - Ajustar o modelo 3D do circuito para coincidir com a montagem real.
-- Cadastrar novos equipamentos e circuitos.
-- Adicionar suporte a iOS.
 
 ---
 
@@ -718,7 +766,7 @@ O arquivo `LICENSE` é a licença MIT do template inicial do Expo, usado como ba
 - **Luiza Santos Mascarenhas Bottesi** — Gerência de projeto e desenvolvimento mobile
 - **William Rocchi Dias** — Testes e experimento com usuários
 
-**Instituição:** UniFacens  
+**Instituição:** Centro Universitário Facens  
 **Disciplina:** UPX8 — Realidade Aumentada  
 **Semestre:** 2026.2
 
