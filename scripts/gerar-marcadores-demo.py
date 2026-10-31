@@ -10,8 +10,8 @@ Servem para testar o app sem ter o equipamento real em maos: abra a imagem
 na tela do computador ou imprima no tamanho indicado em
 src/features/lab-ar/content/*.ts (physicalWidthMeters) e aponte o celular.
 
-Para o laboratorio real, substitua pelas FOTOS dos equipamentos (ver
-docs/RA-RECONHECIMENTO.md). As posicoes dos hotspots nos arquivos de
+Para o laboratorio real, substitua pelas FOTOS dos equipamentos (ver a secao
+13 do README.md). As posicoes dos hotspots nos arquivos de
 conteudo foram calculadas a partir das coordenadas usadas aqui.
 
 Uso:  python scripts/gerar-marcadores-demo.py   (requer Pillow)

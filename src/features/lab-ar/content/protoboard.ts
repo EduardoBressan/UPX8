@@ -8,7 +8,7 @@ import { EquipamentoAR } from '../types';
  * repetitiva de furos, dificil para o reconhecimento de imagem: no
  * laboratorio, prefira colar um marcador impresso com bastante detalhe ao
  * lado da protoboard e definir os pontos relativos a ele (u/v podem passar
- * de 0..1). Ver docs/RA-RECONHECIMENTO.md.
+ * de 0..1).
  */
 export const protoboard: EquipamentoAR = {
   id: 'protoboard',

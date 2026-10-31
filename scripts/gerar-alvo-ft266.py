@@ -1,6 +1,6 @@
 """
 Gera as imagens de referencia (alvos do reconhecimento) do multimetro
-FT-266 a partir das fotos em docs/fotos/: uma da FRENTE e uma de TRAS.
+FT-266 a partir das fotos em docs/images/fotos/: uma da FRENTE e uma de TRAS.
 
 Cada foto e endireitada e recortada so no corpo preto (sem o papel em volta,
 que muda de lugar para lugar e atrapalharia o reconhecimento). As medidas
@@ -10,7 +10,7 @@ vem do modelo 3D assets/models/alicate-ft266.glb, que esta em escala real
 Saidas:
   assets/markers/ft266-frente.jpg     alvo da frente
   assets/markers/ft266-traseira.jpg   alvo de tras (girado com a garra para cima)
-  docs/fotos/ft266-*-conferencia.jpg  pontos das partes desenhados sobre a foto
+  docs/images/fotos/ft266-*-conferencia.jpg  pontos das partes desenhados sobre a foto
 
 Tambem imprime, para cada lado, a transformacao do modelo 3D e a posicao
 (u, v) de cada parte, usadas em src/features/lab-ar/content/multimetro-ft266.ts.
@@ -26,7 +26,7 @@ import os
 from PIL import Image, ImageDraw
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FOTOS = os.path.join(RAIZ, "docs", "fotos")
+FOTOS = os.path.join(RAIZ, "docs", "images", "fotos")
 MARCADORES = os.path.join(RAIZ, "assets", "markers")
 
 # --- Medidas do modelo 3D (metros, sistema do .glb: X direita, Y espessura, Z para os bornes) ---

@@ -7,7 +7,7 @@ import { EquipamentoAR, Modelo3D } from '../types';
  * O aparelho tem DOIS alvos, um para cada face, para que o app continue
  * reconhecendo quando o aluno vira o multimetro:
  *   assets/markers/ft266-frente.jpg e assets/markers/ft266-traseira.jpg
- * Ambos gerados das fotos em docs/fotos/ por scripts/gerar-alvo-ft266.py, que
+ * Ambos gerados das fotos em docs/images/fotos/ por scripts/gerar-alvo-ft266.py, que
  * tambem calcula as posicoes (u, v) das partes e a transformacao do modelo 3D
  * (o .glb esta em escala real). Pontos fora de 0..1 ficam fora do recorte.
  *

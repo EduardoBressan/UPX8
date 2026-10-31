@@ -9,7 +9,7 @@ import { EquipamentoAR } from '../types';
  * -> barramento − -> fio laranja -> GND do ESP32.
  *
  * O alvo (assets/markers/circuito-esp32-led.jpg) e a placa do ESP32, recortada
- * e endireitada da foto docs/fotos/circuito-esp32-led-referencia.jpg por
+ * e endireitada da foto docs/images/fotos/circuito-esp32-led-referencia.jpg por
  * scripts/gerar-alvo-circuito-esp32.py. O script tambem calcula as posicoes
  * (u, v) das partes e a transformacao do modelo 3D (o .glb esta em escala real).
  * As partes fora do ESP32 ficam fora do alvo, com u ou v fora de 0..1.

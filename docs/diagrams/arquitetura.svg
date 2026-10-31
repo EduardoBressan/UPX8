@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+  <rect width="1200" height="860" fill="#f7f7f7"/>
+  <text x="50" y="58" font-size="30" font-weight="700" fill="#1a1a1a">Arquitetura do Sistema — LabLens</text>
+  <text x="50" y="90" font-size="17" fill="#555">Aplicativo Android sem servidor: todo o conteúdo e o reconhecimento rodam no celular.</text>
+  <rect x="450" y="115" width="300" height="62" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="600.0" y="141.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Usuário</text>
+  <text x="600.0" y="164.0" text-anchor="middle" font-size="14" fill="#555">aluno de laboratório</text>
+  <line x1="600" y1="177" x2="600" y2="212" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="60" y="212" width="1080" height="400" rx="14" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="80" y="240" font-size="15" fill="#555">Aplicativo (React Native + Expo Router)</text>
+  <rect x="90" y="256" width="300" height="76" rx="12" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="240.0" y="289.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Telas (Expo Router)</text>
+  <text x="240.0" y="312.0" text-anchor="middle" font-size="14" fill="#555">index.tsx · ar.tsx · circuito.tsx</text>
+  <rect x="450" y="256" width="300" height="76" rx="12" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="600.0" y="289.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">ARView</text>
+  <text x="600.0" y="312.0" text-anchor="middle" font-size="14" fill="#555">câmera de RA + interface 2D</text>
+  <rect x="810" y="256" width="300" height="76" rx="12" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="960.0" y="289.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">ARHud</text>
+  <text x="960.0" y="312.0" text-anchor="middle" font-size="14" fill="#555">status, painéis e guias</text>
+  <line x1="390" y1="294" x2="448" y2="294" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <line x1="750" y1="294" x2="808" y2="294" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="450" y="386" width="300" height="76" rx="12" fill="#e6f4ea" stroke="#333" stroke-width="2"/>
+  <text x="600.0" y="419.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">LabRecognitionScene</text>
+  <text x="600.0" y="442.0" text-anchor="middle" font-size="14" fill="#555">alvos, modelo 3D e pinos</text>
+  <line x1="600" y1="332" x2="600" y2="384" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="810" y="386" width="300" height="76" rx="12" fill="#fff3e0" stroke="#333" stroke-width="2"/>
+  <text x="960.0" y="419.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">arStore</text>
+  <text x="960.0" y="442.0" text-anchor="middle" font-size="14" fill="#555">estado compartilhado cena ↔ HUD</text>
+  <line x1="750" y1="424" x2="808" y2="424" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <line x1="960" y1="384" x2="960" y2="334" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="90" y="386" width="300" height="76" rx="12" fill="#fff3e0" stroke="#333" stroke-width="2"/>
+  <text x="240.0" y="419.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Catálogos de conteúdo</text>
+  <text x="240.0" y="442.0" text-anchor="middle" font-size="14" fill="#555">EQUIPAMENTOS_AR · CIRCUITOS_AR</text>
+  <line x1="390" y1="424" x2="448" y2="424" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="90" y="512" width="300" height="76" rx="12" fill="#eeeeee" stroke="#333" stroke-width="2"/>
+  <text x="240.0" y="545.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Assets locais</text>
+  <text x="240.0" y="568.0" text-anchor="middle" font-size="14" fill="#555">alvos .jpg/.png · modelos .glb</text>
+  <line x1="240" y1="512" x2="240" y2="464" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="450" y="512" width="300" height="76" rx="12" fill="#e6f4ea" stroke="#333" stroke-width="2"/>
+  <text x="600.0" y="545.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">HotspotMarker3D</text>
+  <text x="600.0" y="568.0" text-anchor="middle" font-size="14" fill="#555">pino, linha e etiqueta 3D</text>
+  <line x1="600" y1="462" x2="600" y2="510" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <line x1="600" y1="612" x2="600" y2="650" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="400" y="650" width="400" height="70" rx="12" fill="#e6f4ea" stroke="#333" stroke-width="2"/>
+  <text x="600.0" y="680.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">ViroReact 2.57.3</text>
+  <text x="600.0" y="703.0" text-anchor="middle" font-size="14" fill="#555">@reactvision/react-viro</text>
+  <line x1="540" y1="720" x2="480" y2="750" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+  <rect x="330" y="752" width="240" height="70" rx="12" fill="#eeeeee" stroke="#333" stroke-width="2"/>
+  <text x="450.0" y="782.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">ARCore</text>
+  <text x="450.0" y="805.0" text-anchor="middle" font-size="14" fill="#555">Google Play Services for AR</text>
+  <rect x="630" y="752" width="240" height="70" rx="12" fill="#eeeeee" stroke="#333" stroke-width="2"/>
+  <text x="750.0" y="782.0" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Câmera e sensores</text>
+  <text x="750.0" y="805.0" text-anchor="middle" font-size="14" fill="#555">do celular Android</text>
+  <line x1="570" y1="787" x2="628" y2="787" stroke="#333" stroke-width="2.5" marker-end="url(#seta)"/>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+  <rect width="1100" height="640" fill="#f7f7f7"/>
+  <text x="50" y="58" font-size="30" font-weight="700" fill="#1a1a1a">Caso de Uso — LabLens</text>
+  <text x="50" y="90" font-size="17" fill="#555">Ações disponíveis para o aluno no aplicativo.</text>
+  <g stroke="#333" stroke-width="3" fill="none"><circle cx="130" cy="290" r="26" fill="#fff"/><line x1="130" y1="316" x2="130" y2="400"/><line x1="85" y1="345" x2="175" y2="345"/><line x1="130" y1="400" x2="90" y2="465"/><line x1="130" y1="400" x2="170" y2="465"/></g>
+  <text x="130" y="500" text-anchor="middle" font-size="19" font-weight="700">Aluno</text>
+  <rect x="270" y="115" width="780" height="490" rx="14" fill="none" stroke="#888" stroke-width="2"/>
+  <text x="660" y="143" text-anchor="middle" font-size="16" fill="#555">Aplicativo LabLens</text>
+  <ellipse cx="660" cy="193" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="199" text-anchor="middle" font-size="18" fill="#1a1a1a">Reconhecer equipamento (multímetro, protoboard)</text>
+  <line x1="180" y1="345" x2="320" y2="193" stroke="#333" stroke-width="2"/>
+  <ellipse cx="660" cy="264" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="270" text-anchor="middle" font-size="18" fill="#1a1a1a">Reconhecer circuito ESP32 + LED</text>
+  <line x1="180" y1="345" x2="320" y2="264" stroke="#333" stroke-width="2"/>
+  <ellipse cx="660" cy="335" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="341" text-anchor="middle" font-size="18" fill="#1a1a1a">Ver o modelo 3D sobre a peça real</text>
+  <line x1="180" y1="345" x2="320" y2="335" stroke="#333" stroke-width="2"/>
+  <ellipse cx="660" cy="406" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="412" text-anchor="middle" font-size="18" fill="#1a1a1a">Consultar a explicação de uma parte</text>
+  <line x1="180" y1="345" x2="320" y2="406" stroke="#333" stroke-width="2"/>
+  <ellipse cx="660" cy="477" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="483" text-anchor="middle" font-size="18" fill="#1a1a1a">Seguir um guia passo a passo</text>
+  <line x1="180" y1="345" x2="320" y2="477" stroke="#333" stroke-width="2"/>
+  <ellipse cx="660" cy="548" rx="340" ry="30" fill="#e3f0fd" stroke="#333" stroke-width="2"/>
+  <text x="660" y="554" text-anchor="middle" font-size="18" fill="#1a1a1a">Mostrar ou ocultar etiquetas e modelo 3D</text>
+  <line x1="180" y1="345" x2="320" y2="548" stroke="#333" stroke-width="2"/>
+</svg>

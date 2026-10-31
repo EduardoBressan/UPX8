@@ -1,0 +1,7 @@
+Esta pasta guarda os documentos complementares do projeto, por exemplo:
+- persona;
+- jornada do usuário;
+- relatórios de testes;
+- referências técnicas.
+
+A documentação principal está no README.md, na raiz do repositório.

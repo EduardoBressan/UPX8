@@ -1,6 +1,6 @@
 """
 Gera a imagem de referencia (alvo do reconhecimento) do circuito ESP32 + LED
-a partir da foto docs/fotos/circuito-esp32-led-referencia.jpg, no mesmo padrao
+a partir da foto docs/images/fotos/circuito-esp32-led-referencia.jpg, no mesmo padrao
 de scripts/gerar-alvo-ft266.py.
 
 A foto foi tirada de cima, mas com um pouco de perspectiva. Por isso ela e
@@ -25,7 +25,7 @@ da foto principal; assim todos os alvos tem o mesmo enquadramento e tamanho.
 Saidas:
   assets/markers/circuito-esp32-led.jpg            alvo principal (mesa clara)
   assets/markers/circuito-esp32-led-<n>.jpg        alvos extras
-  docs/fotos/circuito-esp32-led-conferencia.jpg    furos e partes desenhados sobre a foto
+  docs/images/fotos/circuito-esp32-led-conferencia.jpg    furos e partes desenhados sobre a foto
 
 Tambem imprime a transformacao do modelo 3D e a posicao (u, v) de cada parte,
 usadas em src/features/lab-ar/content/circuito-esp32-led.ts.
@@ -38,10 +38,10 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FOTO = os.path.join(RAIZ, "docs", "fotos", "circuito-esp32-led-referencia.jpg")
+FOTO = os.path.join(RAIZ, "docs", "images", "fotos", "circuito-esp32-led-referencia.jpg")
 MARCADORES = os.path.join(RAIZ, "assets", "markers")
 ALVO = os.path.join(MARCADORES, "circuito-esp32-led.jpg")
-CONFERENCIA = os.path.join(RAIZ, "docs", "fotos", "circuito-esp32-led-conferencia.jpg")
+CONFERENCIA = os.path.join(RAIZ, "docs", "images", "fotos", "circuito-esp32-led-conferencia.jpg")
 
 # --- Medidas do modelo 3D (metros, sistema do .glb: X direita, Y para cima, Z para o lado do LED) ---
 PASSO = 0.00254
@@ -87,7 +87,7 @@ CALIBRACAO = [
 # ponta oposta e lado do D23, ponta oposta e lado do EN.
 FUROS_FOTO_PRINCIPAL = [(419.3, 391.7), (648.3, 365.0), (441.7, 841.7), (685.0, 815.0)]
 
-# Fotos extras (em docs/fotos/) e os mesmos 4 furos, na mesma ordem.
+# Fotos extras (em docs/images/fotos/) e os mesmos 4 furos, na mesma ordem.
 FOTOS_EXTRAS = [
     ("circuito-esp32-led-mesa-escura-1.jpg", [(191.7, 595.0), (203.3, 303.3), (780.0, 595.0), (780.0, 310.0)]),
     ("circuito-esp32-led-mesa-escura-2.jpg", [(341.7, 266.7), (556.7, 276.7), (343.3, 710.0), (553.3, 706.7)]),
@@ -144,7 +144,7 @@ def main():
     furos_modelo = [para_foto(h_inversa, u, v) for u, v in FUROS_FOTO_PRINCIPAL]
     for indice, (arquivo, furos) in enumerate(FOTOS_EXTRAS, start=2):
         h_extra = homografia(list(zip(furos, furos_modelo)))
-        extra = Image.open(os.path.join(RAIZ, "docs", "fotos", arquivo)).convert("RGB")
+        extra = Image.open(os.path.join(RAIZ, "docs", "images", "fotos", arquivo)).convert("RGB")
         recortar(extra, h_extra).save(os.path.join(MARCADORES, f"circuito-esp32-led-{indice}.jpg"), quality=93)
 
     conferencia = foto.copy()
