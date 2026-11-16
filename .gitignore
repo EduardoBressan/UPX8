@@ -42,3 +42,8 @@ example
 # generated native folders
 /ios
 /android
+
+# configuracoes locais de ferramentas de desenvolvimento
+CLAUDE.md
+AGENTS.md
+.claude/

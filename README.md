@@ -559,7 +559,7 @@ flowchart TD
 | Guia passo a passo | Abrir **Medir tensão contínua (DC)** com o multímetro reconhecido | Avançar os passos com a parte em destaque | Passos e destaques funcionaram | ✅ |
 | Circuito: alvo com a protoboard | Usar um alvo com protoboard, fios e mesa | Reconhecer e exibir o modelo 3D | Exibiu uma vez e não repetiu | ❌ |
 | Circuito: alvo só com o ESP32 | Aproximar o celular do ESP32 | Reconhecer e exibir o modelo 3D | Reconheceu, mas devagar e só de perto | ❌ |
-| Circuito: QR Code | Apontar a câmera para o QR Code do circuito | Reconhecer e exibir o modelo 3D | A testar no celular | 🚧 |
+| Circuito: QR Code | Apontar a câmera para o QR Code do circuito | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu o modelo sobre o QR Code | ✅ |
 | Manter posição | Afastar o celular depois do reconhecimento | Conteúdo continua no lugar | Conteúdo mantido, com aviso na tela | ✅ |
 
 ### 22.2 Verificação técnica planejada
@@ -660,6 +660,12 @@ O desenvolvimento está registrado em commits na branch `main`. A parte de circu
 | `ab8078a` | Reconhecimento dos circuitos |
 | `22bdb5d` | Melhorias na interface e no reconhecimento do circuito |
 | `481e513` | Três imagens de referência para o circuito |
+| `ae4c33f` | Nome do aplicativo alterado para LabLens |
+| `b199b63` | README no modelo da disciplina e organização da pasta `docs` |
+| `146c112` | README alinhado ao artigo científico |
+| `90aa635` | Circuito identificado por QR Code, com o 3D na horizontal e pinos menores |
+
+As versões entregues estão marcadas com tags (`v1.0.0`, `v1.0.1`).
 
 Daqui em diante, as mensagens seguem o padrão abaixo:
 
