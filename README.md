@@ -122,7 +122,7 @@ Os requisitos RF01 a RF09 são os definidos no artigo científico.
 | RF08 | Registrar interações | Registra guias, partes consultadas, passos repetidos e perdas de rastreamento | ⬜ |
 | RF09 | Exportar registros | Exporta os registros de cada sessão em arquivo CSV | ⬜ |
 | RF10 | Tela inicial | Escolha entre Equipamentos e Circuitos | ✅ |
-| RF11 | Reconhecer circuitos | Reconhece um circuito montado a partir de uma peça rígida, como o microcontrolador | ✅ |
+| RF11 | Reconhecer circuitos | Identifica cada circuito pelo seu QR Code e mostra o modelo 3D sobre ele | ✅ |
 | RF12 | Exibir modelo 3D | Mostra um modelo `.glb` em escala real sobre a peça, com opção de ocultar | ✅ |
 | RF13 | Manter posição | Mantém o conteúdo no lugar quando a imagem sai de vista | ✅ |
 | RF14 | Reconhecer novos modelos sem cadastro prévio | Ampliar o reconhecimento para outros modelos de equipamento e outros circuitos | ⬜ |
@@ -181,7 +181,7 @@ Para o registro de interações (RF08 e RF09), o artigo prevê o uso de SQLite c
 | Smartphone | Samsung Galaxy S25 Ultra | Android, compatível com ARCore | Execução e testes |
 | Computador | Lenovo 82MG | Windows 11, Intel Core i5-11300H, 16 GB de RAM, NVIDIA GTX 1650 | Desenvolvimento |
 | Multímetro | FT-266 | Exemplar usado nos testes, frente e parte de trás | Equipamento de referência |
-| Placa de desenvolvimento | ESP32 DevKit (ESP-WROOM-32) | Exemplar usado nos testes | Referência visual do circuito |
+| Placa de desenvolvimento | ESP32 DevKit (ESP-WROOM-32) | Exemplar usado nos testes | Componente do circuito |
 | Protoboard | 830 furos | 165 × 55 mm | Equipamento de referência e montagem do circuito |
 | Componentes | LED vermelho, resistor de 1 kΩ, 3 fios jumper | Circuito do pino D2 ao GND | Circuito usado nos testes |
 
@@ -223,6 +223,8 @@ Conteúdo correspondente é exibido (dados)
 
 O projeto usa **Image Tracking** (rastreamento de imagens naturais): cada objeto possui uma ou mais imagens de referência (os "alvos"). O ARCore procura essas imagens na câmera e estima continuamente sua posição e orientação no espaço. A técnica foi adotada por dispensar o treinamento de modelos de detecção, cujo desempenho em dispositivos móveis ainda é limitado, e por manter o rastreamento mesmo quando a imagem sai temporariamente de vista.
 
+Nos equipamentos, a imagem de referência é uma foto da própria peça. Nos circuitos, cuja aparência muda com a posição dos fios, a referência é um **QR Code de identificação**: cada circuito tem o seu, colado ou exibido ao lado da montagem. Como o QR Code puro é um padrão repetitivo, ruim para o ARCore, ele fica no centro de uma moldura com desenhos e textos sem repetição. O app não decodifica o conteúdo do QR Code: o adesivo inteiro é cadastrado como imagem de referência, e o modelo 3D do circuito aparece centrado nele, deitado na horizontal e em metade do tamanho real, para não cobrir demais o adesivo.
+
 O protótipo usa os exemplares abaixo como referência. Outros modelos e circuitos são adicionados pelo cadastro descrito na seção 13.
 
 | Referência no protótipo | Imagem de referência | Largura real |
@@ -230,7 +232,7 @@ O protótipo usa os exemplares abaixo como referência. Outros modelos e circuit
 | Multímetro FT-266, frente | `assets/markers/ft266-frente.jpg` | 6,5 cm |
 | Multímetro FT-266, parte de trás | `assets/markers/ft266-traseira.jpg` | 6,5 cm |
 | Protoboard de demonstração | `assets/markers/protoboard-demo.png` | 16,5 cm |
-| Circuito ESP32 + LED | `assets/markers/circuito-esp32-led.jpg`, `-2.jpg` e `-3.jpg` | 2,6 cm |
+| Circuito ESP32 + LED | `assets/markers/circuito-esp32-led-qrcode.png` (QR Code com moldura) | 6 cm |
 
 ### 11.2 Fluxo técnico
 
@@ -253,16 +255,15 @@ O protótipo usa os exemplares abaixo como referência. Outros modelos e circuit
 - painéis 2D com explicações, guias e alertas de segurança;
 - indicação do estado do reconhecimento.
 
-### 11.4 Alinhamento do modelo com a peça real
+### 11.4 Alinhamento do modelo com a imagem de referência
 
-Os modelos estão em escala real e são posicionados a partir de cálculos feitos sobre as fotos:
+Os modelos estão em escala real e são posicionados a partir de cálculos feitos pelos scripts de `scripts/`:
 
-- `scripts/gerar-alvo-circuito-esp32.py` endireita a foto por uma homografia, calculada com furos e números impressos da protoboard;
-- o mesmo script recorta só a placa do ESP32, que é rígida e cheia de detalhes;
-- as fotos extras são alinhadas pelos 4 furos de fixação do ESP32, então as três imagens têm o mesmo enquadramento e usam as mesmas posições;
-- o script imprime a transformação do modelo e a posição `(u, v)` de cada parte, usadas no arquivo de conteúdo.
+- `scripts/gerar-alvo-ft266.py` endireita as fotos do multímetro, recorta o painel e calcula a posição de cada parte e a transformação do modelo;
+- `scripts/gerar-qrcode-circuito.py` gera o QR Code do circuito com a moldura e calcula a posição de cada parte em relação a ele, com o modelo centrado no adesivo;
+- os dois scripts imprimem as posições `(u, v)` usadas nos arquivos de conteúdo.
 
-![Conferência do alinhamento na foto](docs/images/fotos/circuito-esp32-led-conferencia.jpg)
+<img src="assets/markers/circuito-esp32-led-qrcode.png" alt="QR Code de identificação do circuito, usado como imagem de referência" width="240">
 
 ---
 
@@ -334,17 +335,16 @@ UPX8/
 | `src/features/lab-ar/content/protoboard.ts` | Conteúdo da protoboard |
 | `src/features/lab-ar/content/circuito-esp32-led.ts` | Conteúdo do circuito ESP32 + LED |
 | `scripts/gerar-alvo-ft266.py` | Gera os alvos do multímetro e calcula as posições das partes |
-| `scripts/gerar-alvo-circuito-esp32.py` | Gera os alvos do circuito e calcula as posições das partes |
+| `scripts/gerar-qrcode-circuito.py` | Gera o QR Code do circuito e calcula as posições das partes |
 
 ### Como adicionar um equipamento ou circuito
 
 1. Modele o objeto em escala real, em metros, e exporte o `.glb` para `assets/models/`.
-2. Tire uma foto bem de cima, com boa luz e sem reflexo, e salve em `docs/images/fotos/`.
-3. Prefira uma área rígida e cheia de detalhes. Evite padrões repetitivos, como a grade de furos da protoboard.
-4. Copie um script de `scripts/`, ajuste os pontos de calibração, o recorte e as partes, e rode o script.
-5. Crie o conteúdo seguindo `multimetro-ft266.ts` ou `circuito-esp32-led.ts`, com os valores impressos pelo script.
-6. Inclua o objeto em `EQUIPAMENTOS_AR` ou em `CIRCUITOS_AR`, no arquivo `content/index.ts`. A cena registra os alvos sozinha.
-7. Para reconhecer o objeto em outras condições de luz, acrescente fotos do mesmo recorte em `alvo.imagensExtras`.
+2. **Equipamento:** tire uma foto bem de cima, com boa luz e sem reflexo, salve em `docs/images/fotos/` e adapte `scripts/gerar-alvo-ft266.py`. Prefira uma área rígida e cheia de detalhes, sem padrões repetitivos.
+3. **Circuito:** copie `scripts/gerar-qrcode-circuito.py`, troque o conteúdo do QR Code, o nome e as partes, e rode o script.
+4. Crie o conteúdo seguindo `multimetro-ft266.ts` ou `circuito-esp32-led.ts`, com os valores impressos pelo script.
+5. Inclua o objeto em `EQUIPAMENTOS_AR` ou em `CIRCUITOS_AR`, no arquivo `content/index.ts`. A cena registra os alvos sozinha.
+6. Para reconhecer um equipamento em outras condições de luz, acrescente fotos do mesmo recorte em `alvo.imagensExtras`.
 
 ---
 
@@ -374,7 +374,7 @@ react-native-screens ~4.26.0
 Os scripts de `scripts/` são opcionais e só são necessários para gerar alvos novos:
 
 ```bash
-python -m pip install pillow numpy
+python -m pip install pillow numpy segno
 ```
 
 ---
@@ -473,10 +473,9 @@ eas build --profile preview --platform android
 ### Circuitos
 
 1. Toque em **Circuitos**.
-2. Aproxime o celular do ESP32, de cima, até a placa ocupar cerca de metade da tela.
-3. Mantenha boa luz e evite fios por cima do ESP32 e reflexo no módulo prateado.
-4. Quando o modelo aparecer, você pode afastar o celular: ele fica preso na posição.
-5. Toque nos números ou abra um guia, como **Seguir o caminho da corrente**.
+2. Aponte a câmera para o QR Code do circuito, impresso com cerca de 6 cm ou exibido numa tela.
+3. Quando o modelo 3D aparecer sobre o QR Code, você pode mover o celular em volta: ele fica preso na posição.
+4. Toque nos números ou abra um guia, como **Seguir o caminho da corrente**.
 
 <img src="docs/images/tela-inicial.png" alt="Tela inicial do LabLens" width="300">
 
@@ -527,14 +526,6 @@ flowchart TD
 - **Ação do usuário:** tocar em um dos cartões.
 - **Observação:** imagem capturada na versão web da mesma tela.
 
-### Câmera de RA em Circuitos
-
-<img src="docs/images/tela-circuitos-camera.jpg" alt="Câmera de RA na tela de Circuitos" width="300">
-
-- **Finalidade:** reconhecer o circuito.
-- **Elementos:** botão de voltar, indicador de estado e orientação para o usuário.
-- **Ação do usuário:** aproximar o celular do ESP32. Nesta captura, o circuito ainda não foi reconhecido porque está longe da câmera.
-
 ### Multímetro reconhecido
 
 <img src="docs/images/experiencia-ra-multimetro.jpg" alt="Multímetro reconhecido com o modelo 3D e os pinos numerados" width="300">
@@ -545,11 +536,12 @@ flowchart TD
 
 ### Circuito reconhecido
 
-<img src="docs/images/experiencia-ra-circuito.jpg" alt="Circuito montado com o modelo 3D e os pinos numerados" width="300">
+<img src="docs/images/experiencia-ra-circuito.jpg" alt="Circuito com o modelo 3D e os pinos numerados" width="300">
 
 - **Finalidade:** explicar o circuito montado.
-- **Elementos:** modelo 3D do circuito, pinos numerados e painel com as partes e os guias. O indicador amarelo mostra que o conteúdo está na última posição conhecida, porque o celular se afastou do ESP32.
+- **Elementos:** modelo 3D do circuito, pinos numerados e painel com as partes e os guias.
 - **Ação do usuário:** tocar num número ou abrir um guia, como **Seguir o caminho da corrente**.
+- **Observação:** captura da versão anterior, em que o circuito era reconhecido pela placa do ESP32. Na versão atual, o mesmo conteúdo aparece sobre o QR Code.
 
 ---
 
@@ -566,7 +558,8 @@ flowchart TD
 | Multímetro | Apontar a câmera para o painel do multímetro | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu | ✅ |
 | Guia passo a passo | Abrir **Medir tensão contínua (DC)** com o multímetro reconhecido | Avançar os passos com a parte em destaque | Passos e destaques funcionaram | ✅ |
 | Circuito: alvo com a protoboard | Usar um alvo com protoboard, fios e mesa | Reconhecer e exibir o modelo 3D | Exibiu uma vez e não repetiu | ❌ |
-| Circuito: alvo só com o ESP32 | Aproximar o celular do ESP32 | Reconhecer e exibir o modelo 3D | Reconheceu e exibiu, mas exige aproximação | ✅ |
+| Circuito: alvo só com o ESP32 | Aproximar o celular do ESP32 | Reconhecer e exibir o modelo 3D | Reconheceu, mas devagar e só de perto | ❌ |
+| Circuito: QR Code | Apontar a câmera para o QR Code do circuito | Reconhecer e exibir o modelo 3D | A testar no celular | 🚧 |
 | Manter posição | Afastar o celular depois do reconhecimento | Conteúdo continua no lugar | Conteúdo mantido, com aviso na tela | ✅ |
 
 ### 22.2 Verificação técnica planejada
@@ -602,11 +595,11 @@ O experimento ainda não foi realizado. Está previsto um delineamento entre gru
 - O reconhecimento depende de referências visuais cadastradas: outros modelos de equipamento e outros circuitos precisam ser cadastrados. Ampliar esse reconhecimento é uma evolução planejada (RF14).
 - O registro de interações, a sessão anônima e a exportação em CSV (RF07 a RF09) ainda não foram implementados.
 - As metas de 4 segundos, 30 quadros por segundo e nota 75 nas imagens ainda não foram medidas.
-- Referências pequenas exigem aproximação: a placa usada no circuito tem 2,6 cm de largura na imagem de referência, e o reconhecimento dela ocorre abaixo da faixa de 30 cm a 1 m prevista em RNF07.
+- O QR Code do circuito deve ter cerca de 6 cm: em outro tamanho, a escala do 3D muda, a menos que `larguraFisicaMetros` seja ajustado.
 - Protoboards reais são difíceis de reconhecer, porque a grade de furos é um padrão repetitivo.
-- O conteúdo do circuito acompanha a montagem cadastrada: com fios em outros furos, o 3D não coincide com a placa real.
-- No modelo do circuito, algumas peças ficam cerca de 4 mm deslocadas em relação à montagem real.
-- Fios sobre a peça de referência, pouca luz e reflexos dificultam o reconhecimento.
+- No circuito, o 3D aparece sobre o QR Code e mostra a montagem cadastrada, não a posição real dos fios.
+- Um QR Code exibido numa tela pode ter reflexo; impresso, o reconhecimento é mais estável.
+- Pouca luz e reflexos dificultam o reconhecimento.
 - No multímetro, o seletor faz parte da imagem reconhecida e deve estar em OFF.
 - Depois que a imagem sai de vista, o conteúdo fica na última posição conhecida: se a peça for movida, ele não acompanha.
 - O projeto foi testado apenas no Android, não funciona no Expo Go, e iOS está fora do escopo do protótipo.
@@ -616,11 +609,7 @@ O experimento ainda não foi realizado. Está previsto um delineamento entre gru
 ## 25. Evidências de Funcionamento
 
 - **Aplicativo em execução:** veja as capturas da seção 21.
-- **Imagens de referência:** o circuito é reconhecido pelas três imagens abaixo.
-
-| Mesa clara | Mesa escura, de perto | Mesa escura, de cima |
-|---|---|---|
-| <img src="assets/markers/circuito-esp32-led.jpg" alt="Alvo em mesa clara" width="180"> | <img src="assets/markers/circuito-esp32-led-2.jpg" alt="Alvo em mesa escura, de perto" width="180"> | <img src="assets/markers/circuito-esp32-led-3.jpg" alt="Alvo em mesa escura, de cima" width="180"> |
+- **Imagem de referência do circuito:** o QR Code de identificação, na seção 11.4.
 
 - **Experiência de RA:** o multímetro e o circuito reconhecidos, com o modelo 3D na tela.
 
@@ -695,7 +684,7 @@ test: registra teste em dispositivo Android
 
 **Problema:** em mesa escura e com pouca luz, o circuito continuava difícil de reconhecer.  
 **Causa:** havia uma única imagem de referência, feita em mesa clara e com luz forte.  
-**Solução:** cadastrar o mesmo recorte a partir de três fotos, alinhadas pelos 4 furos de fixação do ESP32.
+**Solução:** cadastrar o mesmo recorte a partir de três fotos, alinhadas pelos 4 furos de fixação do ESP32. A melhora foi pequena, o que levou à solução do problema 7.
 
 ### Problema 3 — Risco de conteúdo duplicado com várias imagens
 
@@ -721,6 +710,12 @@ test: registra teste em dispositivo Android
 **Causa:** o `git checkout` trocou os arquivos do projeto, mas a pasta `node_modules` continuava com as dependências de outra branch.  
 **Solução:** voltar à branch correta ou rodar `npm install` depois de trocar de branch.
 
+### Problema 7 — Circuito lento para reconhecer
+
+**Problema:** mesmo com as imagens do ESP32, o circuito demorava a ser reconhecido e só de perto, enquanto o multímetro era reconhecido com facilidade.  
+**Causa:** a aparência de um circuito muda a cada montagem, por causa dos fios, e a placa do ESP32 é pequena demais como referência.  
+**Solução:** identificar cada circuito por um QR Code próprio, numa moldura com desenhos que garante o reconhecimento, e mostrar o modelo 3D sobre ele.
+
 ---
 
 ## 30. Melhorias Futuras
@@ -728,8 +723,8 @@ test: registra teste em dispositivo Android
 - Ampliar o reconhecimento para outros modelos de equipamento e outros circuitos (RF14).
 - Implementar a sessão anônima, o registro de interações e a exportação em CSV (RF07 a RF09).
 - Avaliar as imagens de referência com a ferramenta do ARCore e refazê-las com fotos de maior resolução.
-- Aumentar a distância de reconhecimento para atender à faixa de 30 cm a 1 m.
-- Ajustar o modelo 3D do circuito para coincidir com a montagem real.
+- Medir a distância de reconhecimento para confirmar a faixa de 30 cm a 1 m.
+- Gerar um QR Code para cada circuito do laboratório e cadastrar os modelos correspondentes.
 
 ---
 

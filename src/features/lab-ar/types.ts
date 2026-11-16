@@ -103,6 +103,8 @@ export interface EquipamentoAR {
     imagensExtras?: ImageSourcePropType[];
   };
   modelo3D?: Modelo3D;
+  /** Fator sobre o tamanho dos pinos e das etiquetas 3D. Use menos de 1 em objetos pequenos (padrao 1). */
+  tamanhoPinos?: number;
   hotspots: Hotspot[];
   procedimentos: Procedimento[];
   cuidadosGerais: AlertaSeguranca[];

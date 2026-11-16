@@ -11,6 +11,8 @@ interface HotspotMarker3DProps {
   alturaEtiqueta: number;
   aparencia: AparenciaHotspot;
   mostrarEtiqueta: boolean;
+  /** Fator sobre os tamanhos padrao do pino e da etiqueta (1 = tamanho padrao). */
+  tamanho?: number;
   onPress: () => void;
 }
 
@@ -33,17 +35,19 @@ export function HotspotMarker3D({
   alturaEtiqueta,
   aparencia,
   mostrarEtiqueta,
+  tamanho = 1,
   onPress,
 }: HotspotMarker3DProps) {
   const exibirEtiqueta = aparencia === 'destaque' || (mostrarEtiqueta && aparencia === 'normal');
-  const escala = aparencia === 'destaque' ? ESCALA_ETIQUETA_DESTAQUE : ESCALA_ETIQUETA;
+  const escala = (aparencia === 'destaque' ? ESCALA_ETIQUETA_DESTAQUE : ESCALA_ETIQUETA) * tamanho;
+  const raio = RAIO_PINO[aparencia] * tamanho;
   const materialPino = aparencia === 'destaque' ? 'raPinoDestaque' : aparencia === 'esmaecido' ? 'raPinoEsmaecido' : 'raPino';
 
   return (
     <ViroNode position={posicao}>
       <ViroSphere
-        position={[0, RAIO_PINO[aparencia], 0]}
-        radius={RAIO_PINO[aparencia]}
+        position={[0, raio, 0]}
+        radius={raio}
         materials={[materialPino]}
         onClick={onPress}
       />
@@ -52,14 +56,14 @@ export function HotspotMarker3D({
         <>
           <ViroPolyline
             points={[
-              [0, RAIO_PINO[aparencia] * 2, 0],
+              [0, raio * 2, 0],
               [0, alturaEtiqueta, 0],
             ]}
-            thickness={ESPESSURA_LINHA[aparencia]}
+            thickness={ESPESSURA_LINHA[aparencia] * tamanho}
             materials={[aparencia === 'destaque' ? 'raLinhaDestaque' : 'raLinha']}
             ignoreEventHandling
           />
-          <ViroNode position={[0, alturaEtiqueta + 0.006, 0]} transformBehaviors={['billboard']}>
+          <ViroNode position={[0, alturaEtiqueta + 0.006 * tamanho, 0]} transformBehaviors={['billboard']}>
             <ViroText
               text={`${numero}  ${rotulo}`}
               scale={[escala, escala, escala]}

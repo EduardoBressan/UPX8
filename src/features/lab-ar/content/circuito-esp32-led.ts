@@ -8,44 +8,44 @@ import { EquipamentoAR } from '../types';
  * Caminho da corrente: D2 -> fio preto -> resistor 1 kΩ -> LED -> fio roxo
  * -> barramento − -> fio laranja -> GND do ESP32.
  *
- * O alvo (assets/markers/circuito-esp32-led.jpg) e a placa do ESP32, recortada
- * e endireitada da foto docs/images/fotos/circuito-esp32-led-referencia.jpg por
- * scripts/gerar-alvo-circuito-esp32.py. O script tambem calcula as posicoes
- * (u, v) das partes e a transformacao do modelo 3D (o .glb esta em escala real).
- * As partes fora do ESP32 ficam fora do alvo, com u ou v fora de 0..1.
+ * O alvo (assets/markers/circuito-esp32-led-qrcode.png) e o QR Code de
+ * identificacao do circuito, numa moldura com desenhos que garante o
+ * reconhecimento pelo ARCore. Gerado por scripts/gerar-qrcode-circuito.py, que
+ * tambem calcula as posicoes (u, v) das partes. O modelo 3D (escala real) fica
+ * centrado no QR Code; as partes fora do adesivo tem u ou v fora de 0..1.
  */
 
 export const circuitoEsp32Led: EquipamentoAR = {
   id: 'circuito-esp32-led',
   nome: 'Circuito ESP32 + LED',
   descricao: 'O pino D2 do ESP32 acende um LED vermelho através de um resistor de 1 kΩ.',
-  avisoModelo: 'Conteúdo feito para esta montagem. Se os fios estiverem em outros furos, o 3D não vai coincidir com a placa real.',
+  avisoModelo: 'O 3D mostra a montagem cadastrada para este circuito. Confira os furos na placa real antes de ligar.',
   alvo: {
-    imagem: require('@/assets/markers/circuito-esp32-led.jpg'),
-    // Largura real do recorte (placa do ESP32 com ~1 mm de margem para dentro).
-    larguraFisicaMetros: 0.0262,
-    // O mesmo recorte em mesa escura e com pouca luz: reconhece o circuito em mais ambientes.
-    imagensExtras: [require('@/assets/markers/circuito-esp32-led-2.jpg'), require('@/assets/markers/circuito-esp32-led-3.jpg')],
+    imagem: require('@/assets/markers/circuito-esp32-led-qrcode.png'),
+    // Largura real do adesivo com o QR Code (impresso ou exibido numa tela).
+    larguraFisicaMetros: 0.06,
   },
-  // A face de cima da placa do ESP32 coincide com o centro do alvo (valores impressos pelo script).
+  // A protoboard do modelo fica centrada no QR Code, deitada na horizontal (ESP32 a esquerda) e em meia escala.
   modelo3D: {
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- modelo 3D e um asset do Metro
     fonte: require('@/assets/models/circuito-esp32-led.glb'),
     tipo: 'GLB',
-    posicao: [-0.001, -0.0126, 0.0599],
-    rotacao: [0, 0, 0],
-    escala: [1, 1, 1],
+    posicao: [0, 0, 0],
+    rotacao: [0, 90, 0],
+    escala: [0.5, 0.5, 0.5],
     alturaSuperficie: 0,
   },
+  // O modelo esta em meia escala: pinos e etiquetas menores para nao cobrir as pecas.
+  tamanhoPinos: 0.5,
   hotspots: [
     {
       id: 'esp32',
       numero: 1,
       nome: 'ESP32 DevKit',
       rotuloCurto: 'ESP32',
-      posicao: { u: 0.462, v: 0.785 },
-      alturaEtiqueta: 0.035,
-      alturaExtra: 0.0032,
+      posicao: { u: 0.118, v: 0.5 },
+      alturaEtiqueta: 0.02,
+      alturaExtra: 0.0079,
       oQueE:
         'Placa com o microcontrolador ESP32 (módulo prateado ESP-WROOM-32), que tem Wi-Fi e Bluetooth. É o "cérebro" do circuito: o programa gravado nele decide quando o LED acende.',
       comoUsar:
@@ -61,9 +61,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 2,
       nome: 'Pino D2 (GPIO 2) e fio preto',
       rotuloCurto: 'D2',
-      posicao: { u: -0.073, v: 0.375 },
-      alturaEtiqueta: 0.045,
-      alturaExtra: 0.0105,
+      posicao: { u: -0.05, v: 0.617 },
+      alturaEtiqueta: 0.03,
+      alturaExtra: 0.0115,
       oQueE:
         'Pino de saída digital que liga e desliga o LED. O fio preto leva o sinal do D2 até a fileira do resistor.',
       comoUsar:
@@ -78,9 +78,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 3,
       nome: 'Fio laranja (GND do ESP32)',
       rotuloCurto: 'GND',
-      posicao: { u: -0.382, v: 0.272 },
-      alturaEtiqueta: 0.03,
-      alturaExtra: 0.0105,
+      posicao: { u: -0.093, v: 0.684 },
+      alturaEtiqueta: 0.018,
+      alturaExtra: 0.0115,
       oQueE: 'Liga o pino GND (terra) do ESP32 ao barramento − (azul) da protoboard.',
       comoUsar:
         'É por este fio que a corrente volta ao ESP32 depois de passar pelo LED. Sem ele o circuito fica aberto e o LED não acende.',
@@ -91,9 +91,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 4,
       nome: 'Resistor de 1 kΩ',
       rotuloCurto: 'Resistor 1 kΩ',
-      posicao: { u: 0.462, v: 1.844 },
-      alturaEtiqueta: 0.03,
-      alturaExtra: 0.0028,
+      posicao: { u: 0.553, v: 0.5 },
+      alturaEtiqueta: 0.02,
+      alturaExtra: 0.0077,
       oQueE:
         'Limita a corrente que passa pelo LED. Cores: marrom (1), preto (0), vermelho (×100) e dourado (±5%) = 1.000 Ω = 1 kΩ.',
       comoUsar:
@@ -108,9 +108,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 5,
       nome: 'LED vermelho',
       rotuloCurto: 'LED',
-      posicao: { u: 1.24, v: 1.978 },
-      alturaEtiqueta: 0.025,
-      alturaExtra: 0.0133,
+      posicao: { u: 0.608, v: 0.33 },
+      alturaEtiqueta: 0.014,
+      alturaExtra: 0.0129,
       oQueE: 'Diodo emissor de luz: acende quando a corrente passa do anodo (perna longa) para o catodo (perna curta).',
       comoUsar:
         'O anodo (+) fica na fileira do resistor e o catodo (−) na fileira do fio roxo, que vai para o GND.',
@@ -122,9 +122,9 @@ export const circuitoEsp32Led: EquipamentoAR = {
       numero: 6,
       nome: 'Fio roxo (catodo → GND)',
       rotuloCurto: 'Fio roxo',
-      posicao: { u: -0.382, v: 2.229 },
-      alturaEtiqueta: 0.03,
-      alturaExtra: 0.0105,
+      posicao: { u: 0.712, v: 0.684 },
+      alturaEtiqueta: 0.02,
+      alturaExtra: 0.0115,
       oQueE: 'Liga a fileira do catodo do LED ao barramento − (GND) da protoboard, fechando o circuito.',
       comoUsar: 'Uma ponta na mesma fileira da perna curta do LED, a outra no barramento −, o mesmo do fio laranja.',
       cuidados: [

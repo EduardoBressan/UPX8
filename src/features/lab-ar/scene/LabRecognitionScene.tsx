@@ -129,6 +129,7 @@ export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
                     numero={hotspot.numero}
                     rotulo={hotspot.rotuloCurto}
                     alturaEtiqueta={hotspot.alturaEtiqueta ?? ALTURA_ETIQUETA_PADRAO}
+                    tamanho={equipamento.tamanhoPinos}
                     aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
                     mostrarEtiqueta={estado.mostrarEtiquetas}
                     onPress={() => {
