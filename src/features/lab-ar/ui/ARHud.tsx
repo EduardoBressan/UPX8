@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -25,6 +25,7 @@ function mensagemDeStatus(estado: EstadoAR, equipamento: EquipamentoAR | null, d
 export function ARHud({ dica }: { dica: string }) {
   const router = useRouter();
   const theme = useTheme();
+  const margens = useSafeAreaInsets();
   const estado = useEstadoAR();
   const equipamento = buscarEquipamento(estado.equipamentoId);
   const hotspot = equipamento?.hotspots.find((h) => h.id === estado.hotspotId) ?? null;
@@ -32,7 +33,13 @@ export function ARHud({ dica }: { dica: string }) {
   const reconhecido = equipamento !== null && estado.equipamentoVisivel;
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill} pointerEvents="box-none">
+    <View
+      style={[
+        StyleSheet.absoluteFill,
+        styles.camada,
+        { paddingTop: margens.top, paddingBottom: margens.bottom, paddingLeft: margens.left, paddingRight: margens.right },
+      ]}
+      pointerEvents="box-none">
       <View style={styles.topo} pointerEvents="box-none">
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <ThemedView type="backgroundElement" style={styles.botaoRedondo}>
@@ -63,7 +70,7 @@ export function ARHud({ dica }: { dica: string }) {
         {equipamento && !procedimento && hotspot && <PainelHotspot hotspot={hotspot} />}
         {equipamento && !procedimento && !hotspot && <PainelEquipamento equipamento={equipamento} />}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -240,6 +247,12 @@ function PainelProcedimento({
 }
 
 const styles = StyleSheet.create({
+  camada: {
+    // A camera de RA do Android e uma GLSurfaceView. Um fundo quase transparente (invisivel a olho nu) faz a
+    // tela inteira contar como conteudo por cima da camera desde o inicio, para os paineis que aparecem depois
+    // do reconhecimento serem desenhados.
+    backgroundColor: 'rgba(0, 0, 0, 0.004)',
+  },
   topo: {
     flexDirection: 'row',
     alignItems: 'center',

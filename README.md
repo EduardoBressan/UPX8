@@ -336,7 +336,6 @@ UPX8/
 | `src/features/lab-ar/content/circuito-esp32-led.ts` | Conteúdo do circuito ESP32 + LED |
 | `scripts/gerar-alvo-ft266.py` | Gera os alvos do multímetro e calcula as posições das partes |
 | `scripts/gerar-qrcode-circuito.py` | Gera o QR Code do circuito e calcula as posições das partes |
-| `scripts/gerar-icone.py` | Gera o ícone do app e a imagem da tela de abertura |
 
 ### Como adicionar um equipamento ou circuito
 

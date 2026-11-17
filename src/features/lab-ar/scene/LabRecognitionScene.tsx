@@ -43,6 +43,11 @@ ViroMaterials.createMaterials({
   raLinhaDestaque: { diffuseColor: '#FF9800', lightingModel: 'Constant' },
 });
 
+/** Executa a acao fora do evento nativo do Viro, num ciclo normal do JavaScript. */
+function foraDoEvento(acao: () => void) {
+  setTimeout(acao, 0);
+}
+
 function converterRastreamento(estado: number): Rastreamento {
   if (estado === ViroTrackingStateConstants.TRACKING_NORMAL) return 'normal';
   if (estado === ViroTrackingStateConstants.TRACKING_LIMITED) return 'limitado';
@@ -78,7 +83,10 @@ export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
   const estado = useEstadoAR();
 
   return (
-    <ViroARScene onTrackingUpdated={(estadoRastreamento) => acoesAR.definirRastreamento(converterRastreamento(estadoRastreamento))}>
+    <ViroARScene
+      onTrackingUpdated={(estadoRastreamento) =>
+        foraDoEvento(() => acoesAR.definirRastreamento(converterRastreamento(estadoRastreamento)))
+      }>
       <ViroAmbientLight color="#FFFFFF" intensity={300} />
       <ViroDirectionalLight color="#FFFFFF" direction={[0, -1, -0.3]} intensity={500} />
 
@@ -101,13 +109,15 @@ export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
             <ViroARImageMarker
               key={alvo.nome}
               target={alvo.nome}
-              onAnchorFound={() => acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome)}
+              onAnchorFound={() => foraDoEvento(() => acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome))}
               onAnchorUpdated={(ancora) => {
                 // ARCore: "tracking" = imagem na camera agora; "lastKnownPose" = saiu de vista, posicao congelada.
-                if (ancora.trackingMethod === 'tracking') acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome);
-                else acoesAR.equipamentoForaDeVista(alvo.nome);
+                const rastreando = ancora.trackingMethod === 'tracking';
+                foraDoEvento(() =>
+                  rastreando ? acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome) : acoesAR.equipamentoForaDeVista(alvo.nome),
+                );
               }}
-              onAnchorRemoved={() => acoesAR.equipamentoPerdido(alvo.nome)}>
+              onAnchorRemoved={() => foraDoEvento(() => acoesAR.equipamentoPerdido(alvo.nome))}>
               {exibir && equipamento.modelo3D && estado.mostrarModelo && (
                 <Viro3DObject
                   source={equipamento.modelo3D.fonte}
@@ -133,8 +143,10 @@ export function LabRecognitionScene({ itens }: { itens: EquipamentoAR[] }) {
                     aparencia={aparenciaDo(hotspot, destaque, emProcedimento)}
                     mostrarEtiqueta={estado.mostrarEtiquetas}
                     onPress={() => {
-                      acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome);
-                      acoesAR.selecionarHotspot(hotspot.id);
+                      foraDoEvento(() => {
+                        acoesAR.equipamentoReconhecido(equipamento.id, alvo.nome);
+                        acoesAR.selecionarHotspot(hotspot.id);
+                      });
                     }}
                   />
                 ))}
