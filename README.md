@@ -223,7 +223,7 @@ Conteúdo correspondente é exibido (dados)
 
 O projeto usa **Image Tracking** (rastreamento de imagens naturais): cada objeto possui uma ou mais imagens de referência (os "alvos"). O ARCore procura essas imagens na câmera e estima continuamente sua posição e orientação no espaço. A técnica foi adotada por dispensar o treinamento de modelos de detecção, cujo desempenho em dispositivos móveis ainda é limitado, e por manter o rastreamento mesmo quando a imagem sai temporariamente de vista.
 
-Nos equipamentos, a imagem de referência é uma foto da própria peça. Nos circuitos, cuja aparência muda com a posição dos fios, a referência é um **QR Code de identificação**: cada circuito tem o seu, colado ou exibido ao lado da montagem. Como o QR Code puro é um padrão repetitivo, ruim para o ARCore, ele fica no centro de uma moldura com desenhos e textos sem repetição. O app não decodifica o conteúdo do QR Code: o adesivo inteiro é cadastrado como imagem de referência, e o modelo 3D do circuito aparece centrado nele, deitado na horizontal e em metade do tamanho real, para não cobrir demais o adesivo.
+Nos equipamentos, a imagem de referência é uma foto da própria peça. Nos circuitos, cuja aparência muda com a posição dos fios, a referência é um **QR Code de identificação**: cada circuito tem o seu, colado ou exibido ao lado da montagem. O adesivo traz o QR Code, o nome do circuito em cima e o nome do app embaixo; os textos também ajudam o reconhecimento, já que o QR Code é um padrão repetitivo de quadrados. O app não decodifica o conteúdo do QR Code: o adesivo inteiro é cadastrado como imagem de referência, e o modelo 3D do circuito aparece centrado nele, deitado na horizontal e em metade do tamanho real, para não cobrir demais o adesivo.
 
 O protótipo usa os exemplares abaixo como referência. Outros modelos e circuitos são adicionados pelo cadastro descrito na seção 13.
 
@@ -232,7 +232,7 @@ O protótipo usa os exemplares abaixo como referência. Outros modelos e circuit
 | Multímetro FT-266, frente | `assets/markers/ft266-frente.jpg` | 6,5 cm |
 | Multímetro FT-266, parte de trás | `assets/markers/ft266-traseira.jpg` | 6,5 cm |
 | Protoboard de demonstração | `assets/markers/protoboard-demo.png` | 16,5 cm |
-| Circuito ESP32 + LED | `assets/markers/circuito-esp32-led-qrcode.png` (QR Code com moldura) | 6 cm |
+| Circuito ESP32 + LED | `assets/markers/circuito-esp32-led-qrcode.png` (QR Code com o nome do circuito) | 6 cm |
 
 ### 11.2 Fluxo técnico
 
@@ -260,7 +260,7 @@ O protótipo usa os exemplares abaixo como referência. Outros modelos e circuit
 Os modelos estão em escala real e são posicionados a partir de cálculos feitos pelos scripts de `scripts/`:
 
 - `scripts/gerar-alvo-ft266.py` endireita as fotos do multímetro, recorta o painel e calcula a posição de cada parte e a transformação do modelo;
-- `scripts/gerar-qrcode-circuito.py` gera o QR Code do circuito com a moldura e calcula a posição de cada parte em relação a ele, com o modelo centrado no adesivo;
+- `scripts/gerar-qrcode-circuito.py` gera o QR Code do circuito com o título e calcula a posição de cada parte em relação a ele, com o modelo centrado no adesivo;
 - os dois scripts imprimem as posições `(u, v)` usadas nos arquivos de conteúdo.
 
 <img src="assets/markers/circuito-esp32-led-qrcode.png" alt="QR Code de identificação do circuito, usado como imagem de referência" width="240">
@@ -720,7 +720,7 @@ test: registra teste em dispositivo Android
 
 **Problema:** mesmo com as imagens do ESP32, o circuito demorava a ser reconhecido e só de perto, enquanto o multímetro era reconhecido com facilidade.  
 **Causa:** a aparência de um circuito muda a cada montagem, por causa dos fios, e a placa do ESP32 é pequena demais como referência.  
-**Solução:** identificar cada circuito por um QR Code próprio, numa moldura com desenhos que garante o reconhecimento, e mostrar o modelo 3D sobre ele.
+**Solução:** identificar cada circuito por um QR Code próprio, com o nome do circuito, e mostrar o modelo 3D sobre ele.
 
 ---
 

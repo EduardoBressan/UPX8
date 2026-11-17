@@ -9,9 +9,9 @@ import { EquipamentoAR } from '../types';
  * -> barramento − -> fio laranja -> GND do ESP32.
  *
  * O alvo (assets/markers/circuito-esp32-led-qrcode.png) e o QR Code de
- * identificacao do circuito, numa moldura com desenhos que garante o
- * reconhecimento pelo ARCore. Gerado por scripts/gerar-qrcode-circuito.py, que
- * tambem calcula as posicoes (u, v) das partes. O modelo 3D (escala real) fica
+ * identificacao do circuito, com o nome dele em cima. Gerado por
+ * scripts/gerar-qrcode-circuito.py, que tambem calcula as posicoes (u, v) das
+ * partes. O modelo 3D (escala real) fica
  * centrado no QR Code; as partes fora do adesivo tem u ou v fora de 0..1.
  */
 
